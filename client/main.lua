@@ -10,12 +10,14 @@ local Keys = {
   ["NENTER"] = 201, ["N4"] = 108, ["N5"] = 60, ["N6"] = 107, ["N+"] = 96, ["N-"] = 97, ["N7"] = 117, ["N8"] = 61, ["N9"] = 118
 }
 
-ESX              = nil
-local PlayerData = {}
-local timer      = 0
-local seconde    = 1000
-local vehicle    = nil
-local playerPed  = PlayerPedId()
+ESX                    = nil
+local PlayerData       = {}
+local timer            = 0
+local seconde          = 1000
+local vehicle          = nil
+local playerPed        = PlayerPedId()
+local cops             = 0
+local callcopsresult   = 0
 
 Citizen.CreateThread(function()
 	while ESX == nil do
@@ -35,13 +37,44 @@ Citizen.CreateThread(function()
 	while true do
 
 		Citizen.Wait(0)
-		if IsControlJustReleased(0, Keys['F9']) and PlayerData.job ~= nil and PlayerData.job.name ~= 'police' then
+		if IsControlJustReleased(0, Keys['F9']) and PlayerData.job ~= nil and PlayerData.job.name ~= 'police' and PlayerData.job.name ~= 'sheriff' and PlayerData.job.name ~= 'fbi' then
 			print("Appuier sur F9")---DEBUG
 			if IsPedInAnyVehicle(playerPed, false) then
 			else
 				OpenMenu()
+				TriggerServerEvent('esx_ownedcarthief:howmanycops')
 			end
 		end
+	end
+end)
+
+RegisterNetEvent('esx_ownedcarthief:howmanycops2')
+AddEventHandler('esx_ownedcarthief:howmanycops2', function(data)
+  cops = data
+end)
+
+RegisterNetEvent('esx_ownedcarthief:911')
+AddEventHandler('esx_ownedcarthief:911', function(gx, gy, gz)
+	if PlayerData.job ~= nil then
+	  if PlayerData.job.name == 'police' or PlayerData.job.name == 'sheriff' or PlayerData.job.name == 'fbi' then
+		if Config.AlertPolice then
+			local transG = 250
+			local crimeBlip = AddBlipForCoord(gx, gy, gz)
+			SetBlipSprite(crimeBlip , 161) -- Blips qui flash bleu
+			SetBlipScale(crimeBlip , 2.0) -- Blips qui flash bleu
+			SetBlipColour(crimeBlip, 3) -- Blips qui flash bleu
+			PulseBlip(crimeBlip) -- Blips qui flash bleu
+			while transG ~= 0 do
+				Wait(Config.BlipTime * 4)
+				transG = transG - 1
+				if transG == 0 then
+					SetBlipSprite(crimeBlip,  2)
+					return
+				end
+			end
+		   
+		end
+	  end
 	end
 end)
 
@@ -67,8 +100,12 @@ function OpenMenu()
       },
       function(data, menu)
         if data.current.value == 'stolecar' then
-          menu.close()
-          StoleCar()
+			menu.close()
+			if cops >= Config.PoliceNumberRequired then
+				StoleCar()
+			else
+				ESX.ShowNotification(_U('no_cops'))
+			end
         end
 
         if data.current.value == 'resellcar' then
@@ -96,8 +133,13 @@ local coords    = GetEntityCoords(playerPed)
 			TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
 			ShowTimer()
 			Citizen.Wait(timer/1.5)
-			SetVehicleAlarm(vehicle, 1)
-			StartVehicleAlarm(vehicle)
+			callcopsresult = math.random(1,101)
+			if callcopsresult <= Config.CallCopsChance then
+				local plyPos = GetEntityCoords(playerPed,  true)
+				SetVehicleAlarm(vehicle, 1)
+				StartVehicleAlarm(vehicle)
+				TriggerServerEvent('esx_ownedcarthief:callcops', plyPos.x, plyPos.y, plyPos.z)
+			end
 		end
 end
 
@@ -139,16 +181,18 @@ print("Debut fonction ShowTimer")---DEBUG
 			        stolecheck = false
 			local 	vehicle2   = ESX.Game.GetVehicleInDirection()
 			local   playerPed  = PlayerPedId()
-			local   succes     = math.random(1,2)
+			local   succes     = math.random(1,101)
 
 			ClearPedTasksImmediately(playerPed)
 			print(succes)
 			if vehicle == vehicle2 then
-				if succes == 1 then
+				if succes <= Config.SuccesChance then
 					SetVehicleDoorsLocked(vehicle, 1)
 					SetVehicleDoorsLockedForAllPlayers(vehicle, false)
-					SetVehicleAlarm(vehicle, 1)
-					StartVehicleAlarm(vehicle)
+					if callcopsresult <= Config.CallCopsChance then
+						SetVehicleAlarm(vehicle, 1)
+						StartVehicleAlarm(vehicle)
+					end
 					ESX.ShowNotification(_U('vehicle_unlocked'))
 				else
 					ESX.ShowNotification(_U('vehicle_notunlocked'))
