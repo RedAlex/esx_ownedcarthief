@@ -11,7 +11,7 @@ TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 		for i=1, #xPlayers, 1 do
 			local xPlayer1 = ESX.GetPlayerFromId(xPlayers[i])		
 			if xPlayer1.job.name == 'police' or xPlayer1.job.name == 'sheriff' then
-			  TriggerClientEvent('esx:showNotification', xPlayers[i], ("Central : Une alarme de véhicule a été activer a ces coordonnés."))
+			  TriggerClientEvent('esx:showNotification', xPlayers[i], _U('911')("Central : Une alarme de véhicule a été activer a ces coordonnés."))
 			  TriggerClientEvent('esx_ownedcarthief:911', xPlayers[i], gx, gy, gz)
 			end
 		end
@@ -28,4 +28,12 @@ AddEventHandler('esx_ownedcarthief:howmanycops', function()
 							end
 						end
 TriggerClientEvent('esx_ownedcarthief:howmanycops2', source, cops)
+end)
+
+ESX.RegisterServerCallback('esx_ownedcarthief:isPlateTaken', function (source, cb, plate)
+    MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
+        ['@plate'] = plate
+    }, function (result)
+        cb(result[1] ~= nil)
+    end)
 end)

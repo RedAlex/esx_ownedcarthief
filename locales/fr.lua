@@ -6,4 +6,6 @@ Locales['fr'] = {
   ['resellcar'] = 'racheter un véhicule volé',
   ['car_robber_menu'] = 'action illégal',
   ['no_cops'] = 'mais ou sont donc les policiers?',
+  ['not_work_with_npc'] = 'ce véhicule n\'appartien a personne',
+  ['911'] = '~g~Central~s~ : Une alarme de véhicule a été activer a ces coordonnés.',
 }

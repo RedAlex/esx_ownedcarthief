@@ -1,9 +1,11 @@
 Locales['en'] = {
-  ['please_wait'] = 'Tenter d\'ouvrir la porte va vous prendre ~b~%s minutes %s secondes~s~',
-  ['vehicle_unlocked'] = 'véhicule ~g~Déverouillé~s~',
-  ['vehicle_notunlocked'] = 'le véhicule est toujours ~g~Verouillé~s~',
-  ['stolecar'] = 'tenter de voler un véhicule',
-  ['resellcar'] = 'racheter un véhicule volé',
-  ['car_robber_menu'] = 'action illégal',
-  ['no_cops'] = 'mais ou sont donc les policiers?',
+  ['please_wait'] = 'Trying to open the door will take you ~b~%s minutes %s secondes~s~',
+  ['vehicle_unlocked'] = 'Vehicle ~g~Unlocked~s~',
+  ['vehicle_notunlocked'] = 'the vehicle is still ~g~Locked~s~',
+  ['stolecar'] = 'attempt to steal a vehicle',
+  ['resellcar'] = 'buy a stolen vehicle',
+  ['car_robber_menu'] = 'illegal action',
+  ['no_cops'] = 'where are the cop?',
+  ['not_work_with_npc'] = 'this vehicle belongs to no one',
+  ['911'] = '~g~Central~s~ : A vehicle alarm has been activated at these coordinates.',
 }
