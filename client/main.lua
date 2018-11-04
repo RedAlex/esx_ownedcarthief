@@ -15,7 +15,6 @@ local PlayerData       = {}
 local timer            = 0
 local seconde          = 1000
 local vehicle          = nil
-local playerPed        = PlayerPedId()
 local cops             = 0
 local callcopsresult   = 0
 
@@ -39,6 +38,7 @@ Citizen.CreateThread(function()
 		Citizen.Wait(0)
 		if IsControlJustReleased(0, Keys['F9']) and PlayerData.job ~= nil and PlayerData.job.name ~= 'police' and PlayerData.job.name ~= 'sheriff' and PlayerData.job.name ~= 'fbi' then
 			print("Appuier sur F9")---DEBUG
+			local playerPed        = PlayerPedId()
 			if IsPedInAnyVehicle(playerPed, false) then
 			else
 				OpenMenu()
@@ -77,6 +77,22 @@ AddEventHandler('esx_ownedcarthief:911', function(gx, gy, gz)
 	  end
 	end
 end)
+
+function CheckOwnedPlate()
+    local CheckOwnedPlate = false
+
+    while true do
+        Citizen.Wait(2)
+
+        ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken)
+            if isPlateTaken then
+                CheckOwnedPlate = true
+            end
+        end, CheckOwnedPlate)
+    end
+
+    return CheckOwnedPlate
+end
 
 function OpenMenu()
 
@@ -125,9 +141,9 @@ end
 
 function StoleCar()
 print("Debut fonction StoleCar")---DEBUG
+local playerPed        = PlayerPedId()
 local coords    = GetEntityCoords(playerPed)
       vehicle   = ESX.Game.GetVehicleInDirection()
-
 
 		if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 3.0) then
 			TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
