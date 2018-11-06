@@ -10,3 +10,21 @@ Config.PoliceNumberRequired = 0    --Set how many cops is need to try stole a ca
 Config.AlertPolice          = true --Turn to false if you don't want cops is called on car alarm start for player car.
 Config.CallCopsChance       = 60   --How many % of chance for the car alarm start AND call cops. 0-100
 Config.BlipTime             = 40   --Set how many time a blip keep flash on map.
+
+
+
+Config.Zones = {
+
+  PawnShop = {
+    Pos   = {x = -1451.63, y =-382.51 , z =38.36 },
+    Size  = {x = 1.5, y = 1.5, z = 1.0},
+    Color = {r = 204, g = 204, b = 0},
+    Type  = 1
+  }
+}
+
+Config.Prices = {
+  {name = "hammerwirecutter", price = 100,},
+  {name = "unlockingtool",    price = 200,},
+  {name = "jammer",           price = 300}
+}
