@@ -1,8 +1,5 @@
 ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-	local _source = source
-	local xPlayer = ESX.GetPlayerFromId(source)
-	local copscalled = false
 
   RegisterServerEvent('esx_ownedcarthief:callcops')
   AddEventHandler('esx_ownedcarthief:callcops', function(gx, gy, gz)
@@ -18,8 +15,9 @@ TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 end)
 
 RegisterServerEvent('esx_ownedcarthief:alarmgps')
-AddEventHandler('esx_ownedcarthief:alarmgps', function(vehicle, data)
-	local AlarmStatus = data
+AddEventHandler('esx_ownedcarthief:alarmgps', function(veh, status)
+	local AlarmStatus = status
+	local vehicle     = veh
 	local xPlayers    = ESX.GetPlayers()
 	
 	for i=1, #xPlayers, 1 do
@@ -61,7 +59,6 @@ ESX.RegisterServerCallback('esx_ownedcarthief:alarminstall', function (source, c
         ['@plate'] = plate
     }, function(security)
 		cb(security)
-	print(security)
 	end)
 end)
 
@@ -108,8 +105,55 @@ end)
 ESX.RegisterUsableItem('jammer', function(source) --GPS Jammer cut the signal of call cops
     local _source = source
     local xPlayer = ESX.GetPlayerFromId(_source)
-    xPlayer.removeInventoryItem('jammer', 1)
-    TriggerClientEvent('esx:showNotification', _source, "In Build")
+	local xPlayers    = ESX.GetPlayers()
+	
+	Citizen.Wait(3000)
+	if xPlayer.job.name == 'police' then
+		for i=1, #xPlayers, 1 do
+		local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
+			if xPlayer.job.name == 'police' then
+				TriggerClientEvent('esx_ownedcarthief:removeBlip', xPlayers[i])
+			end
+		end
+	end
+	xPlayer.removeInventoryItem('jammer', 1)
+	TriggerClientEvent('esx:showNotification', _source, _U('jammeruse'))
+end)
+
+ESX.RegisterUsableItem('alarminterface', function(source) --Alarm system interface for cop usage, can cut an car gps alarm
+	local _source = source
+	local xPlayers    = ESX.GetPlayers()
+	
+	TriggerClientEvent('esx:showNotification', _source, _U('rucops'))
+	local xPlayer = ESX.GetPlayerFromId(_source)
+	if xPlayer.job.name == 'police' then
+		TriggerClientEvent('esx:showNotification', _source, _U('truecop'))
+		for i=1, #xPlayers, 1 do
+		local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
+			if xPlayer.job.name == 'police' then
+				TriggerClientEvent('esx_ownedcarthief:removeBlip', xPlayers[i])
+			end
+		end
+	else
+		TriggerClientEvent('esx:showNotification', _source, _U('illegalusedetect'))
+		TriggerClientEvent('esx:showNotification', _source, _U('memoryformating'))
+		xPlayer.removeInventoryItem('alarminterface', 1)
+	end
+end)
+
+ESX.RegisterUsableItem('alarm1', function(source) --In Build
+    local _source = source
+	TriggerClientEvent('esx_ownedcarthief:*******', _source, "alarm1")
+end)
+
+ESX.RegisterUsableItem('alarm2', function(source) --In Build
+    local _source = source
+	TriggerClientEvent('esx_ownedcarthief:*******', _source, "alarm2")
+end)
+
+ESX.RegisterUsableItem('alarm3', function(source) --In Build
+    local _source = source
+	TriggerClientEvent('esx_ownedcarthief:******', _source, "alarm3")
 end)
 
 RegisterServerEvent('esx_ownedcarthief:itemused')

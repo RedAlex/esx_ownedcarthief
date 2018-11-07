@@ -2,8 +2,9 @@ ALTER TABLE `owned_vehicles` ADD `security` int(1) NOT NULL DEFAULT '0' COMMENT 
 
 INSERT INTO `items` (name, label, `limit`) VALUES
 	('hammerwirecutter', 'Kit para arrombamento basico', 1),
-	('unlockingtool', 'Kit para arrombamento sofisticado', 1),
-	('jammer', 'Bloqueador de sinal', 1),
+	('unlockingtool', 'Kit para arrombamento sofisticado (Ilegal)', 1),
+	('jammer', 'Bloqueador de sinal (Ilegal)', 1),
+	('alarminterface', "Interface do sistema de alarme", 1),
 	('alarm1', 'Alarme basico', 1),
 	('alarm2', 'Alarme com GPS barato', 1),
 	('alarm3', 'Alarme com GPS premium', 1)

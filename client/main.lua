@@ -101,8 +101,6 @@ end)
 RegisterNetEvent('esx_ownedcarthief:stealcar')
 AddEventHandler('esx_ownedcarthief:stealcar', function(item)
 
-print("Debut event stealcar")--DEBUG
-
     vehicle    = ESX.Game.GetVehicleInDirection()
     stolecheck = false
     timer      = 0
@@ -196,7 +194,6 @@ local itemused        = item
 end)
 
 function ShowTimer()
-print("Debut fonction ShowTimer")--DEBUG
 
 	Citizen.CreateThread(function()
 		while timer > 0 do
@@ -234,7 +231,6 @@ print("Debut fonction ShowTimer")--DEBUG
 			local   succes     = math.random(1,101)
 
 			ClearPedTasksImmediately(playerPed)
-			print(succes)
 			if vehicle == vehicle2 then
 				if succes <= Config.SuccesChance then
 					SetVehicleDoorsLocked(vehicle, 1)
@@ -380,11 +376,14 @@ function createBlip(id)
 	end
 end
 
-RegisterNetEvent('esx_ownedcarthief:GPSBlip') --IN BUILD
+RegisterNetEvent('esx_ownedcarthief:GPSBlip')
 AddEventHandler('esx_ownedcarthief:GPSBlip', function(veh, data)
 	local vehiclealarm = veh
 	local AlarmStatus  = data
-
+	if vehiclealarm == nil then
+	    vehiclealarm = ESX.Game.GetVehicleInDirection()
+	end
+	
 	if AlarmStatus and PlayerData.job ~= nil and PlayerData.job.name == 'police' then
 		createBlip(vehiclealarm)
 	elseif not AlarmStatus and PlayerData.job ~= nil and PlayerData.job.name == 'police' then
@@ -393,9 +392,14 @@ AddEventHandler('esx_ownedcarthief:GPSBlip', function(veh, data)
 
 end)
 
+RegisterNetEvent('esx_ownedcarthief:removeBlip')
+AddEventHandler('esx_ownedcarthief:removeBlip', function()
+	veh = ESX.Game.GetVehicleInDirection()
+	TriggerServerEvent('esx_ownedcarthief:alarmgps', veh, false)
+end)
+
 function removeBlip(data)
 	local existingBlip = data
-print("remblipgps")--DEBUG
 
 	for k, existingBlip in pairs(carblips) do
 		RemoveBlip(existingBlip)
