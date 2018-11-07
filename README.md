@@ -13,6 +13,11 @@
 - EssentialMode 5.0.3
 - Async 2.0
 - Esx 
+
+# Created by
+- Code - Alex Garcio     https://github.com/RedAlex
+- Code - Alain Proviste  https://github.com/EagleOnee
+- Translation - iKaoticx https://github.com/iKaoticx
 ___
 # esx_ownedcarthief Alpha 12
 
@@ -32,5 +37,6 @@ ___
 
 
 # Créer par
-- Alex Garcio https://github.com/RedAlex
-- Alain Proviste https://github.com/EagleOnee
+- Code - Alex Garcio    https://github.com/RedAlex
+- Code - Alain Proviste https://github.com/EagleOnee
+- Traduction - iKaoticx https://github.com/iKaoticx

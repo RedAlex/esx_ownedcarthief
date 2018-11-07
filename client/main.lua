@@ -34,14 +34,36 @@ Citizen.CreateThread(function()
 
 end)
 
+Citizen.CreateThread(function()
+local playerPed = PlayerPedId()
+	while true do
+
+		Citizen.Wait(5)
+		if stolecheck then
+			local coordx,coordy,coordz = table.unpack(GetEntityCoords(playerPed,true))
+			Citizen.Wait(1 * seconde)
+			local newx,newy,newz = table.unpack(GetEntityCoords(playerPed,true))
+			if GetDistanceBetweenCoords(coordx,coordy,coordz, newx,newy,newz) > 2 then
+				stolecheck = false
+				timer      = 0
+			end
+		end
+	end
+end)
 
 Citizen.CreateThread(function()
+local playerPed = PlayerPedId()
+
 	while true do
 
 		Citizen.Wait(0)
-		if timer > (15*seconde) then
-			Citizen.Wait(12 * seconde)
-			TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
+		if timer > (20 * seconde) and stolecheck then
+			Citizen.Wait(19 * seconde)
+			if timer > (4 * seconde) and stolecheck then
+				TaskPlayAnim(GetPlayerPed(-1), "gestures@m@standing@casual" ,"gesture_damn" ,8.0, -8.0, -1, 0, 0, false, false, false )
+				Citizen.Wait(3 * seconde)
+				TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
+			end
 		end
 	end
 end)
@@ -79,7 +101,7 @@ end)
 RegisterNetEvent('esx_ownedcarthief:stealcar')
 AddEventHandler('esx_ownedcarthief:stealcar', function(item)
 
-print("Debut fonction StoleCar")--DEBUG
+print("Debut event stealcar")--DEBUG
 
     vehicle    = ESX.Game.GetVehicleInDirection()
     stolecheck = false
@@ -89,73 +111,89 @@ local coords          = GetEntityCoords(playerPed)
 local vehicleData     = ESX.Game.GetVehicleProperties(vehicle)
 local CheckOwnedPlate = false
 local itemused        = item
-local plyPos          = GetEntityCoords(playerPed,  true)
-
 
 	TriggerServerEvent('esx_ownedcarthief:howmanycops')
-print(vehicleData.plate)--DEBUG
-	if Config.OnlyPlayerCar then
-	   ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken)
-            if isPlateTaken then
+
+	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 3.0) and vehicleData ~= nil then
+		ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken)
+			if isPlateTaken then
 				ESX.TriggerServerCallback('esx_ownedcarthief:alarminstall', function (alarmsystem)
-					if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 3.0) then
-						if itemused == "hammerwirecutter" then
-							timer = (60 * seconde)
-							callcops = 1
-							TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_HAMMERING", 0, true)
-							Citizen.Wait(5 * seconde)
-							TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-							print("hammerwirecutter")
-						elseif itemused == "unlockingtool" then
-							timer = (30 * seconde)
-							callcops = math.random(1,101)	
-							TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-							print("unlockingtool")
-						end
-						if timer > (31 * seconde) then
-							ShowTimer()
-							Citizen.Wait(30 * seconde)
-							TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-						else
-							ShowTimer()
-						end
-							if callcops <= Config.CallCopsChance then
-								if alarmsystem == 1 then
-									SetVehicleAlarm(vehicle, 1)
-									StartVehicleAlarm(vehicle)
-								elseif alarmsystem == 2 then
-									SetVehicleAlarm(vehicle, 1)
-									StartVehicleAlarm(vehicle)
-									TriggerServerEvent('esx_ownedcarthief:callcops', plyPos.x, plyPos.y, plyPos.z)
-								elseif alarmsystem == 3 then
-									SetVehicleAlarm(vehicle, 1)
-									StartVehicleAlarm(vehicle)
-									TriggerServerEvent('esx_ownedcarthief:callcops', plyPos.x, plyPos.y, plyPos.z)
-									TriggerServerEvent('esx_ownedcarthief:alarmgps')
-								else
-									SetVehicleAlarm(vehicle, 0)
-								end
-							end
-
+					TriggerServerEvent('esx_ownedcarthief:itemused', itemused)
+					if itemused == "hammerwirecutter" then
+						timer = (60 * seconde)
+						callcops = 1
+						TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_HAMMERING", 0, true)
+						Citizen.Wait(5 * seconde)
+						TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
+					elseif itemused == "unlockingtool" then
+						timer = (30 * seconde)
+						callcops = math.random(1,101)	
+						TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
 					end
-			  end, vehicleData.plate)
-			else
-				ESX.ShowNotification(_U('not_work_with_npc'))
-            end
-        end, vehicleData.plate)
 
-	elseif IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 3.0) then
-		TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-		ShowTimer()
-		Citizen.Wait(timer/1.5)
-		TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-		callcops = math.random(1,101)
-		if callcops <= Config.CallCopsChance then
-			local plyPos = GetEntityCoords(playerPed,  true)
-			SetVehicleAlarm(vehicle, 1)
-			StartVehicleAlarm(vehicle)
-			TriggerServerEvent('esx_ownedcarthief:callcops', plyPos.x, plyPos.y, plyPos.z)
-		end
+					ShowTimer()
+
+					Citizen.Wait(math.random(1,21) * seconde)
+					if callcops <= Config.CallCopsChance and stolecheck then
+						if alarmsystem == 1 then
+							SetVehicleAlarm(vehicle, 1)
+						elseif alarmsystem == 2 then
+							SetVehicleAlarm(vehicle, 1)
+							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
+						elseif alarmsystem == 3 then
+							SetVehicleAlarm(vehicle, 1)
+							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
+							TriggerServerEvent('esx_ownedcarthief:alarmgps')
+						else
+							SetVehicleAlarm(vehicle, 0)
+						end
+						StartVehicleAlarm(vehicle)
+						Citizen.Wait(1 * seconde)
+						TaskPlayAnim(GetPlayerPed(-1), "gestures@m@standing@casual" ,"gesture_bring_it_on" ,8.0, -8.0, -1, 0, 0, false, false, false )
+						Citizen.Wait(2.5 * seconde)
+						TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
+					end
+				end, vehicleData.plate)
+
+			elseif not isPlateTaken and not Config.OnlyPlayerCar then
+				TriggerServerEvent('esx_ownedcarthief:itemused', itemused)
+				if itemused == "hammerwirecutter" then
+					timer = (60 * seconde)
+					callcops = 1
+					TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_HAMMERING", 0, true)
+					Citizen.Wait(5 * seconde)
+					TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
+				elseif itemused == "unlockingtool" then
+					timer = (30 * seconde)
+					callcops = math.random(1,101)	
+					TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
+				end
+
+				ShowTimer()
+
+				if callcops <= Config.CallCopsChance then
+					if callcops <= 60 and callcops > 40 then
+						SetVehicleAlarm(vehicle, 1)
+					elseif callcops <= 40 and callcops > 10 then
+						SetVehicleAlarm(vehicle, 1)
+						TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
+					elseif callcops <= 10 then
+						SetVehicleAlarm(vehicle, 1)
+						TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
+						TriggerServerEvent('esx_ownedcarthief:alarmgps')
+					else
+						SetVehicleAlarm(vehicle, 0)
+					end
+						StartVehicleAlarm(vehicle)
+						Citizen.Wait(1 * seconde)
+						TaskPlayAnim(GetPlayerPed(-1), "gestures@m@standing@casual" ,"gesture_bring_it_on" ,8.0, -8.0, -1, 0, 0, false, false, false )
+						Citizen.Wait(2.5 * seconde)
+						TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
+				end
+			elseif not isPlateTaken and Config.OnlyPlayerCar then
+				ESX.ShowNotification(_U('not_work_with_npc'))
+			end
+		end, vehicleData.plate)
 	end
 end)
 

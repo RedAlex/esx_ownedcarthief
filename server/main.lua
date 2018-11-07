@@ -96,15 +96,11 @@ end)
 
 ESX.RegisterUsableItem('hammerwirecutter', function(source) --Hammer high time to unlock but 100% call cops and alarm start
     local _source = source
-    local xPlayer = ESX.GetPlayerFromId(_source)
-    xPlayer.removeInventoryItem('hammerwirecutter', 1)
 	TriggerClientEvent('esx_ownedcarthief:stealcar', _source, "hammerwirecutter")
 end)
 
 ESX.RegisterUsableItem('unlockingtool', function(source) --unlockingtool Medium time to unlock and low chance to call cops
     local _source = source
-    local xPlayer = ESX.GetPlayerFromId(_source)
-    xPlayer.removeInventoryItem('unlockingtool', 1)
 	TriggerClientEvent('esx_ownedcarthief:stealcar', _source, "unlockingtool")
 end)
 
@@ -113,4 +109,12 @@ ESX.RegisterUsableItem('jammer', function(source) --GPS Jammer cut the signal of
     local xPlayer = ESX.GetPlayerFromId(_source)
     xPlayer.removeInventoryItem('jammer', 1)
     TriggerClientEvent('esx:showNotification', _source, "In Build")
+end)
+
+RegisterServerEvent('esx_ownedcarthief:itemused')
+AddEventHandler('esx_ownedcarthief:itemused', function(item)
+	local _source  = source
+	local itemused = item
+	local xPlayer  = ESX.GetPlayerFromId(_source)
+	xPlayer.removeInventoryItem(itemused, 1)
 end)
