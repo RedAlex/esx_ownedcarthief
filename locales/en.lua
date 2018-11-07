@@ -18,4 +18,5 @@ Locales['en'] = {
   ['pawnshop_rebuy'] = 'buy a vehicle',
   ['pawnshop_buyitem'] = 'buy equipment',
   ['warning'] = '~r~You left the Pawn Shop',
+  ['stolen_car'] = 'Vehicle STOLEN',
 }

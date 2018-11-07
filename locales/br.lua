@@ -15,6 +15,7 @@ Locales['br'] = {
   ['pawnshop_rebuy'] = 'Comprar um veículo roubado', 
   ['no_cops'] = 'Para fazer é preciso mais policias na cidade',
   ['not_work_with_npc'] = 'Nos não queremos este veículo no momento',
-  ['911'] = '~g~Central~s~ : O alarme anti-roubo de um veículo foi disparado na area indicadas.',  
-  ['hammerwirecutter'] = 'Kit para arrombamento basico',  
+  ['911'] = '~g~Central~s~ : O alarme anti-roubo de um veículo foi disparado na area indicadas.',
+  ['hammerwirecutter'] = 'Kit para arrombamento basico',
+  ['stolen_car'] = 'Veículo roubado',
 }

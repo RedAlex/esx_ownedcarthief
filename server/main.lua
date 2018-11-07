@@ -10,26 +10,27 @@ TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 	local xPlayers = ESX.GetPlayers()	  
 		for i=1, #xPlayers, 1 do
 			local xPlayer1 = ESX.GetPlayerFromId(xPlayers[i])		
-			if xPlayer1.job.name == 'police' or xPlayer1.job.name == 'sheriff' then
-			  TriggerClientEvent('esx:showNotification', xPlayers[i], _U('911')("Central : Une alarme de véhicule a été activer a ces coordonnés."))
+			if xPlayer1.job.name == 'police' then
+			  TriggerClientEvent('esx:showNotification', xPlayers[i], _U('911'))
 			  TriggerClientEvent('esx_ownedcarthief:911', xPlayers[i], gx, gy, gz)
 			end
 		end
 end)
 
 RegisterServerEvent('esx_ownedcarthief:alarmgps')
-AddEventHandler('esx_ownedcarthief:alarmgps', function(source)
-	local _source = source
-	print("AlarmGPS")
-	local xPlayers = ESX.GetPlayers()
+AddEventHandler('esx_ownedcarthief:alarmgps', function(vehicle, data)
+	local AlarmStatus = data
+	local xPlayers    = ESX.GetPlayers()
 	
 	for i=1, #xPlayers, 1 do
 	local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-		if xPlayer.job.name == 'police' or xPlayer.job.name == 'sheriff' or xPlayer.job.name == 'fbi' then
-			TriggerClientEvent('esx_ownedcarthief:addBlip', xPlayers[i], _source)
+		if xPlayer.job.name == 'police' then
+			TriggerClientEvent('esx_ownedcarthief:GPSBlip', xPlayers[i], vehicle, AlarmStatus)
+			if AlarmStatus then
+				TriggerClientEvent('esx:showNotification', xPlayers[i], _U('911'))
+			end
 		end
 	end
-
 end)
 
 RegisterServerEvent('esx_ownedcarthief:howmanycops')
@@ -38,7 +39,7 @@ AddEventHandler('esx_ownedcarthief:howmanycops', function()
   local cops = 0
 	for i=1, #xPlayers, 1 do
 	local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-		if xPlayer.job.name == 'police' or xPlayer.job.name == 'sheriff' then
+		if xPlayer.job.name == 'police' then
 			cops = cops + 1
 		end
 	end

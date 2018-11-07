@@ -107,7 +107,7 @@ print("Debut event stealcar")--DEBUG
     stolecheck = false
     timer      = 0
 local playerPed       = PlayerPedId()
-local coords          = GetEntityCoords(playerPed)
+local coords          = GetEntityCoords(playerPed, true)
 local vehicleData     = ESX.Game.GetVehicleProperties(vehicle)
 local CheckOwnedPlate = false
 local itemused        = item
@@ -142,8 +142,7 @@ local itemused        = item
 							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
 						elseif alarmsystem == 3 then
 							SetVehicleAlarm(vehicle, 1)
-							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
-							TriggerServerEvent('esx_ownedcarthief:alarmgps')
+							TriggerServerEvent('esx_ownedcarthief:alarmgps', vehicle, true)
 						else
 							SetVehicleAlarm(vehicle, 0)
 						end
@@ -179,8 +178,7 @@ local itemused        = item
 						TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
 					elseif callcops <= 10 then
 						SetVehicleAlarm(vehicle, 1)
-						TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
-						TriggerServerEvent('esx_ownedcarthief:alarmgps')
+						TriggerServerEvent('esx_ownedcarthief:alarmgps', vehicle, true)
 					else
 						SetVehicleAlarm(vehicle, 0)
 					end
@@ -364,45 +362,49 @@ end
 
 -- Create blip on stolen car --IN BUILD
 function createBlip(id)
-	local ped = GetPlayerPed(id)
-	local blip = GetBlipFromEntity(ped)
+	local veh  = id
+	local blip = GetBlipFromEntity(veh)
 
 	if not DoesBlipExist(blip) then -- Add blip and create head display on player
-		blip = AddBlipForEntity(ped)
-		SetBlipSprite(blip, 1)
+		blip = AddBlipForEntity(veh)
+		SetBlipSprite(blip, 161)
 		ShowHeadingIndicatorOnBlip(blip, true) -- Player Blip indicator
-		SetBlipRotation(blip, math.ceil(GetEntityHeading(ped))) -- update rotation
-		SetBlipNameToPlayerName(blip, id) -- update blip name
-		SetBlipScale(blip, 0.85) -- set scale
+		SetBlipRotation(blip, math.ceil(GetEntityHeading(veh))) -- update rotation
+		BeginTextCommandSetBlipName("STRING")
+		AddTextComponentString(_U('stolen_car'))
+		EndTextCommandSetBlipName(blip)
+		SetBlipScale(blip, 1.5) -- set scale
 		SetBlipAsShortRange(blip, true)
 		
 		table.insert(carblips, blip) -- add blip to array so we can remove it later
 	end
 end
 
-RegisterNetEvent('esx_ownedcarthief:addBlip') --IN BUILD
-AddEventHandler('esx_ownedcarthief:addBlip', function(data)
-	local id = data
-print("addblipgps")--DEBUG
+RegisterNetEvent('esx_ownedcarthief:GPSBlip') --IN BUILD
+AddEventHandler('esx_ownedcarthief:GPSBlip', function(veh, data)
+	local vehiclealarm = veh
+	local AlarmStatus  = data
 
-	-- Is the player a cop? In that case show all the blips for stolen car
-	if PlayerData.job ~= nil and PlayerData.job.name == 'police' then
-			if NetworkIsPlayerActive(id) and GetPlayerPed(id) ~= PlayerPedId() then
-				createBlip(id)
-			end
+	if AlarmStatus and PlayerData.job ~= nil and PlayerData.job.name == 'police' then
+		createBlip(vehiclealarm)
+	elseif not AlarmStatus and PlayerData.job ~= nil and PlayerData.job.name == 'police' then
+		removeBlip(vehiclealarm)
 	end
 
 end)
 
-RegisterNetEvent('esx_ownedcarthief:removeBlip')
-AddEventHandler('esx_ownedcarthief:removeBlip', function(data)
-	local id = data
+function removeBlip(data)
+	local existingBlip = data
 print("remblipgps")--DEBUG
-	-- Refresh all blips
+
 	for k, existingBlip in pairs(carblips) do
 		RemoveBlip(existingBlip)
 	end
-end)
+end
+
+RegisterCommand("cutalarm", function(source, args, rawCommand) --FOR TEST
+    TriggerServerEvent('esx_ownedcarthief:alarmgps', false)
+end, false) -- set this to false to allow anyone.
 
 Citizen.CreateThread(function()
 		local blip = AddBlipForCoord(Config.Zones.PawnShop.Pos.x, Config.Zones.PawnShop.Pos.y, Config.Zones.PawnShop.Pos.z)
@@ -431,3 +433,4 @@ Citizen.CreateThread(function()
 		end
 
 end)
+
