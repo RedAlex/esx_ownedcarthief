@@ -144,8 +144,9 @@ local itemused        = item
 							SetVehicleAlarm(vehicle, 1)
 						else
 							SetVehicleAlarm(vehicle, 0)
+						end
 						if alarmsystem >= 2 then
-							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)			
+							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
 						end
 						StartVehicleAlarm(vehicle)
 						Citizen.Wait(1 * seconde)
@@ -176,6 +177,7 @@ local itemused        = item
 							SetVehicleAlarm(vehicle, 1)
 						else
 							SetVehicleAlarm(vehicle, 0)
+						end
 						if alarmsystem >= 2 then
 							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)			
 						end
