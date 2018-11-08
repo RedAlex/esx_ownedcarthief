@@ -9,23 +9,27 @@ TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 			local xPlayer1 = ESX.GetPlayerFromId(xPlayers[i])		
 			if xPlayer1.job.name == 'police' then
 			  TriggerClientEvent('esx:showNotification', xPlayers[i], _U('911'))
-			  TriggerClientEvent('esx_ownedcarthief:911', xPlayers[i], gx, gy, gz)
+			  TriggerClientEvent('esx_ownedcarthief:911', xPlayers[i], gx, gy, gz, 4)
 			end
 		end
 end)
 
 RegisterServerEvent('esx_ownedcarthief:alarmgps')
-AddEventHandler('esx_ownedcarthief:alarmgps', function(veh, status)
+AddEventHandler('esx_ownedcarthief:alarmgps', function(status, txt, gx, gy, gz)
+	local netID = source
+	local info  = txt
 	local AlarmStatus = status
-	local vehicle     = veh
 	local xPlayers    = ESX.GetPlayers()
 	
 	for i=1, #xPlayers, 1 do
 	local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
 		if xPlayer.job.name == 'police' then
-			TriggerClientEvent('esx_ownedcarthief:GPSBlip', xPlayers[i], vehicle, AlarmStatus)
-			if AlarmStatus then
-				TriggerClientEvent('esx:showNotification', xPlayers[i], _U('911'))
+			TriggerClientEvent('esx_ownedcarthief:GPSBlip', xPlayers[i], netID, AlarmStatus)
+			if AlarmStatus and info then
+				TriggerClientEvent('esx_ownedcarthief:911', xPlayers[i], gx, gy, gz, 1)
+				if info then
+					TriggerClientEvent('esx:showNotification', xPlayers[i], _U('911'))
+				end
 			end
 		end
 	end
@@ -108,14 +112,13 @@ ESX.RegisterUsableItem('jammer', function(source) --GPS Jammer cut the signal of
 	local xPlayers    = ESX.GetPlayers()
 	
 	Citizen.Wait(3000)
-	if xPlayer.job.name == 'police' then
 		for i=1, #xPlayers, 1 do
 		local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
 			if xPlayer.job.name == 'police' then
 				TriggerClientEvent('esx_ownedcarthief:removeBlip', xPlayers[i])
 			end
 		end
-	end
+
 	xPlayer.removeInventoryItem('jammer', 1)
 	TriggerClientEvent('esx:showNotification', _source, _U('jammeruse'))
 end)

@@ -21,7 +21,7 @@ Locales['fr'] = {
   ['stolen_car'] = 'Véhicule VOLÉ',
   ['truecop'] = 'Utilisation autoriser. Coupure de l\'alarm en cours',
   ['unlockingtool'] = 'outils de cambriollage (Illégal)', 
-  ['vehicle_notunlocked'] = 'le véhicule est toujours ~g~Verouillé~s~',
-  ['vehicle_unlocked'] = 'véhicule ~g~Déverouillé~s~',
+  ['vehicle_notunlocked'] = 'le véhicule est toujours ~g~Verrouillé~s~',
+  ['vehicle_unlocked'] = 'véhicule ~g~Déverrouillé~s~',
   ['warning'] = '~r~Vous avez quitte le Pawn Shop',
 }

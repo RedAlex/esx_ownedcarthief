@@ -19,6 +19,10 @@ local callcops   = 0
 local carblips   = {}
 local timer      = 0
 local stolecheck = false
+local vehunlock  = false
+local vehplate   = nil
+local alarm      = false
+local SystemType = 0
 
 Citizen.CreateThread(function()
 	while ESX == nil do
@@ -74,7 +78,8 @@ AddEventHandler('esx_ownedcarthief:howmanycops2', function(data)
 end)
 
 RegisterNetEvent('esx_ownedcarthief:911')
-AddEventHandler('esx_ownedcarthief:911', function(gx, gy, gz)
+AddEventHandler('esx_ownedcarthief:911', function(gx, gy, gz, blipt)
+local XBlipTime = blipt
 	if PlayerData.job ~= nil then
 	  if PlayerData.job.name == 'police' or PlayerData.job.name == 'sheriff' or PlayerData.job.name == 'fbi' then
 		if Config.AlertPolice then
@@ -85,7 +90,7 @@ AddEventHandler('esx_ownedcarthief:911', function(gx, gy, gz)
 			SetBlipColour(crimeBlip, 3) -- Blips qui flash bleu
 			PulseBlip(crimeBlip) -- Blips qui flash bleu
 			while transG ~= 0 do
-				Wait(Config.BlipTime * 4)
+				Wait(Config.BlipTime * XBlipTime)
 				transG = transG - 1
 				if transG == 0 then
 					SetBlipSprite(crimeBlip,  2)
@@ -109,6 +114,7 @@ local coords          = GetEntityCoords(playerPed, true)
 local vehicleData     = ESX.Game.GetVehicleProperties(vehicle)
 local CheckOwnedPlate = false
 local itemused        = item
+	  vehplate        = vehicleData.plate
 
 	TriggerServerEvent('esx_ownedcarthief:howmanycops')
 
@@ -117,6 +123,7 @@ local itemused        = item
 			if isPlateTaken then
 				ESX.TriggerServerCallback('esx_ownedcarthief:alarminstall', function (alarmsystem)
 					TriggerServerEvent('esx_ownedcarthief:itemused', itemused)
+					SystemType = alarmsystem
 					if itemused == "hammerwirecutter" then
 						timer = (60 * seconde)
 						callcops = 1
@@ -133,16 +140,12 @@ local itemused        = item
 
 					Citizen.Wait(math.random(1,21) * seconde)
 					if callcops <= Config.CallCopsChance and stolecheck then
-						if alarmsystem == 1 then
+						if alarmsystem > 0 then
 							SetVehicleAlarm(vehicle, 1)
-						elseif alarmsystem == 2 then
-							SetVehicleAlarm(vehicle, 1)
-							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
-						elseif alarmsystem == 3 then
-							SetVehicleAlarm(vehicle, 1)
-							TriggerServerEvent('esx_ownedcarthief:alarmgps', vehicle, true)
 						else
 							SetVehicleAlarm(vehicle, 0)
+						if alarmsystem >= 2 then
+							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)			
 						end
 						StartVehicleAlarm(vehicle)
 						Citizen.Wait(1 * seconde)
@@ -169,17 +172,13 @@ local itemused        = item
 				ShowTimer()
 
 				if callcops <= Config.CallCopsChance then
-					if callcops <= 60 and callcops > 40 then
-						SetVehicleAlarm(vehicle, 1)
-					elseif callcops <= 40 and callcops > 10 then
-						SetVehicleAlarm(vehicle, 1)
-						TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
-					elseif callcops <= 10 then
-						SetVehicleAlarm(vehicle, 1)
-						TriggerServerEvent('esx_ownedcarthief:alarmgps', vehicle, true)
-					else
-						SetVehicleAlarm(vehicle, 0)
-					end
+						if alarmsystem > 0 then
+							SetVehicleAlarm(vehicle, 1)
+						else
+							SetVehicleAlarm(vehicle, 0)
+						if alarmsystem >= 2 then
+							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)			
+						end
 						StartVehicleAlarm(vehicle)
 						Citizen.Wait(1 * seconde)
 						TaskPlayAnim(GetPlayerPed(-1), "gestures@m@standing@casual" ,"gesture_bring_it_on" ,8.0, -8.0, -1, 0, 0, false, false, false )
@@ -236,8 +235,7 @@ function ShowTimer()
 					SetVehicleDoorsLocked(vehicle, 1)
 					SetVehicleDoorsLockedForAllPlayers(vehicle, false)
 					if callcops <= Config.CallCopsChance then
-						SetVehicleAlarm(vehicle, 1)
-						StartVehicleAlarm(vehicle)
+						vehunlock = true
 					end
 					ESX.ShowNotification(_U('vehicle_unlocked'))
 				else
@@ -356,7 +354,6 @@ if(distance<3) then
 		return false
 end
 
--- Create blip on stolen car --IN BUILD
 function createBlip(id)
 	local veh  = id
 	local blip = GetBlipFromEntity(veh)
@@ -377,25 +374,53 @@ function createBlip(id)
 end
 
 RegisterNetEvent('esx_ownedcarthief:GPSBlip')
-AddEventHandler('esx_ownedcarthief:GPSBlip', function(veh, data)
-	local vehiclealarm = veh
-	local AlarmStatus  = data
-	if vehiclealarm == nil then
-	    vehiclealarm = ESX.Game.GetVehicleInDirection()
+AddEventHandler('esx_ownedcarthief:GPSBlip', function(id, data)
+	local AlarmStatus = data
+	local PID  = id
+	local veh  = GetVehiclePedIsIn(GetPlayerPed(GetPlayerFromServerId(PID)), false)
+	local veh2 = ESX.Game.GetVehicleInDirection()
+	if AlarmStatus then
+		createBlip(veh)
+		alarm = true
+	else
+		removeBlip(veh)
+		removeBlip(veh2)
+		alarm     = false
+		vehunlock = false
 	end
-	
-	if AlarmStatus and PlayerData.job ~= nil and PlayerData.job.name == 'police' then
-		createBlip(vehiclealarm)
-	elseif not AlarmStatus and PlayerData.job ~= nil and PlayerData.job.name == 'police' then
-		removeBlip(vehiclealarm)
+
+end)
+
+Citizen.CreateThread(function()
+	local playerPed   = PlayerPedId()
+	while true do
+		Citizen.Wait(1 * seconde)
+		if SystemType == 3 and (vehunlock or alarm) then
+			local veh         = GetVehiclePedIsIn(playerPed, false)
+			local vehicleData = ESX.Game.GetVehicleProperties(veh)
+			local coords      = GetEntityCoords(veh)
+			if vehunlock and veh ~= nil and vehplate == vehicleData.plate and GetPedInVehicleSeat(veh, -1) == playerPed then
+				local coords    = GetEntityCoords(veh)
+				TriggerServerEvent('esx_ownedcarthief:alarmgps', true, true,coords.x, coords.y, coords.z)
+				SetVehicleAlarm(vehicle, 1)
+				StartVehicleAlarm(vehicle)
+				vehunlock = false
+			elseif not vehunlock and vehicle ~= nil and alarm and vehplate == vehicleData.plate then
+				Citizen.Wait(4 * seconde)
+				SetVehicleAlarm(vehicle, 1)
+				StartVehicleAlarm(vehicle)
+				TriggerServerEvent('esx_ownedcarthief:alarmgps', true, false, coords.x, coords.y, coords.z)
+			else
+				Citizen.Wait(1 * seconde)
+			end
+		end
 	end
 
 end)
 
 RegisterNetEvent('esx_ownedcarthief:removeBlip')
 AddEventHandler('esx_ownedcarthief:removeBlip', function()
-	veh = ESX.Game.GetVehicleInDirection()
-	TriggerServerEvent('esx_ownedcarthief:alarmgps', veh, false)
+	TriggerServerEvent('esx_ownedcarthief:alarmgps', false ,false)
 end)
 
 function removeBlip(data)
@@ -406,8 +431,8 @@ function removeBlip(data)
 	end
 end
 
-RegisterCommand("cutalarm", function(source, args, rawCommand) --FOR TEST
-    TriggerServerEvent('esx_ownedcarthief:alarmgps', false)
+RegisterCommand("test", function(source, args, rawCommand) --TEST ZONE
+
 end, false) -- set this to false to allow anyone.
 
 Citizen.CreateThread(function()
