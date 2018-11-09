@@ -25,7 +25,7 @@ AddEventHandler('esx_ownedcarthief:alarmgps', function(status, txt, gx, gy, gz)
 	local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
 		if xPlayer.job.name == 'police' then
 			TriggerClientEvent('esx_ownedcarthief:GPSBlip', xPlayers[i], netID, AlarmStatus)
-			if AlarmStatus and info then
+			if AlarmStatus then
 				TriggerClientEvent('esx_ownedcarthief:911', xPlayers[i], gx, gy, gz, 1)
 				if info then
 					TriggerClientEvent('esx:showNotification', xPlayers[i], _U('911'))
@@ -49,20 +49,20 @@ TriggerClientEvent('esx_ownedcarthief:howmanycops2', source, cops)
 end)
 
 ESX.RegisterServerCallback('esx_ownedcarthief:isPlateTaken', function (source, cb, plate) --Ici on vérify si la plaque est dans la base de donnée
-    MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
-        ['@plate'] = plate
-    }, function (result)
-        cb(result[1] ~= nil)
-    end)
-end)
+	local owned = nil
+	TriggerClientEvent('esx:showNotification', source, _U('inspect'))
+	CreateThread(function()
+		MySQL.Async.fetchAll('SELECT * FROM owned_vehicles', {}, function (result)
+			for i=1, #result, 1 do
+				local vehicleProps = json.decode(result[i].vehicle)
 
-ESX.RegisterServerCallback('esx_ownedcarthief:alarminstall', function (source, cb, plate) --Ici on vérify quel system est installer sur le véhicule
-	
-	 MySQL.Async.fetchScalar('SELECT security FROM owned_vehicles WHERE  @plate = plate',
-    {
-        ['@plate'] = plate
-    }, function(security)
-		cb(security)
+				if vehicleProps.plate == plate then
+					owned = true
+					security = result[i].security
+				end
+			end
+			cb(owned ~= nil, security)
+		end)
 	end)
 end)
 

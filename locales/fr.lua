@@ -2,6 +2,7 @@ Locales['fr'] = {
   ['911'] = '~g~Central~s~ : Une alarme de véhicule a été activer a ces coordonnés.',
   ['hammerwirecutter'] = 'marteau & coupe fil',
   ['illegalusedetect'] = '~r~UTILISATION NON AUTORISÉE DÉTECTÉE',
+  ['inspect'] = '~b~Vous regarder si la clé est dans le contact.',
   ['jammer'] = 'brouilleur de signal (Illégal)',
   ['jammeruse'] = 'Signal brouillé',
   ['max_item'] = 'vous en portez déjà assez sur vous.',

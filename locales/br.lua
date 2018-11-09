@@ -2,6 +2,7 @@ Locales['br'] = {
   ['911'] = '~g~Central~s~ : O alarme anti-roubo de um veículo foi disparado na area indicadas.',
   ['hammerwirecutter'] = 'Kit para arrombamento basico',
   ['illegalusedetect'] = '~r~USO NÃO AUTORIZADO DETECTADO',
+  ['inspect'] = '~b~Você observa se a chave está em contato..',
   ['jammer'] = 'Bloqueador de sinal (Ilegal)',
   ['jammeruse'] = 'Sinal mexido',
   ['max_item'] = 'Você não pode carregar mais disto com você.',

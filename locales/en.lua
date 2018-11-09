@@ -2,6 +2,7 @@ Locales['en'] = {
   ['911'] = '~g~Central~s~ : A vehicle alarm has been activated at these coordinates.',
   ['hammerwirecutter'] = 'hammer & wire cutter',
   ['illegalusedetect'] = '~r~UNAUTHORIZED USE DETECTED',
+  ['inspect'] = '~b~You watch if the key is in touch.',
   ['jammer'] = 'signal jammer (Illegal)',
   ['jammeruse'] = 'Scrambled signal',
   ['max_item'] = 'You are already carrying enough on yourself.',

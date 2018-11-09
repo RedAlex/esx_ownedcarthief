@@ -117,11 +117,10 @@ local itemused        = item
 	  vehplate        = vehicleData.plate
 
 	TriggerServerEvent('esx_ownedcarthief:howmanycops')
-
+	ESX.UI.Menu.CloseAll()
 	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 3.0) and vehicleData ~= nil then
-		ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken)
+		ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken, alarmsystem)
 			if isPlateTaken then
-				ESX.TriggerServerCallback('esx_ownedcarthief:alarminstall', function (alarmsystem)
 					TriggerServerEvent('esx_ownedcarthief:itemused', itemused)
 					SystemType = alarmsystem
 					if itemused == "hammerwirecutter" then
@@ -154,7 +153,6 @@ local itemused        = item
 						Citizen.Wait(2.5 * seconde)
 						TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
 					end
-				end, vehicleData.plate)
 
 			elseif not isPlateTaken and not Config.OnlyPlayerCar then
 				TriggerServerEvent('esx_ownedcarthief:itemused', itemused)
@@ -274,38 +272,19 @@ function OpenPawnshopMenu()
 			{label = _U('pawnshop_buyitem'),  value = 'pawnshop_buyitem'}
 		},
 	}, function(data, menu)
-	  menu.close()
-	  if (isNear(Config.Zones.PawnShop.Pos)) then
-		if data.current.value == 'pawnshop_resell' then
-
-			--ICI ON VEND UN VEHICULE VOLÉ
-			ESX.ShowNotification("In Build")
-		end
-	 else
-	 ESX.ShowNotification(_U('warning'))
-	 ESX.UI.Menu.CloseAll()
-	 end
-	 
-	  if (isNear(Config.Zones.PawnShop.Pos)) then
-		if data.current.value == 'pawnshop_rebuy' then
-
-			--ICI ON RACHETE UN VEHICULE QUI A ÉTÉ VOLÉ
-			ESX.ShowNotification("In Build")
-		end
-	  else
-		ESX.ShowNotification(_U('warning'))
-		ESX.UI.Menu.CloseAll()
-	 end
-	  
-	  if (isNear(Config.Zones.PawnShop.Pos)) then
-		if data.current.value == 'pawnshop_buyitem' then
-			OpenPawnshopMenu2()
-		end
-	  else
-		ESX.ShowNotification(_U('warning'))
-		ESX.UI.Menu.CloseAll()
-	 end
-		
+			menu.close()
+			local zone = Config.Zones
+			for i=1, #zone, 1 do
+					if (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_resell' then
+						--ICI ON VEND UN VEHICULE VOLÉ
+						ESX.ShowNotification("In Build")
+					elseif (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_rebuy' then
+						--ICI ON RACHETE UN VEHICULE QUI A ÉTÉ VOLÉ
+						ESX.ShowNotification("In Build")
+					elseif (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_buyitem' then
+						OpenPawnshopMenu2()
+					end
+			end
 	end, function(data, menu)
 		menu.close()
 	 end
@@ -327,14 +306,13 @@ function OpenPawnshopMenu2()
 			{label = _U('pawnshop_buy') .. ' ' .. _('unlockingtool'),  value = 'unlockingtool'}
 		},
 	}, function(data, menu)
-		
-	  if (isNear(Config.Zones.PawnShop.Pos)) then
-
-			TriggerServerEvent('esx_ownedcarthief:buyitem', data.current.value)
-	  else
-		ESX.ShowNotification(_U('warning'))
-		ESX.UI.Menu.CloseAll()
-	 end
+		menu.close()
+	  	local zone = Config.Zones
+		for i=1, #zone, 1 do
+			if (isNear(zone[i].Pos)) then
+				TriggerServerEvent('esx_ownedcarthief:buyitem', data.current.value)
+			end
+		end
 	end, function(data, menu)
 		ESX.UI.Menu.CloseAll()
 	end
@@ -395,6 +373,7 @@ end)
 
 Citizen.CreateThread(function()
 	local playerPed   = PlayerPedId()
+	local alarmtime   = 8
 	while true do
 		Citizen.Wait(1 * seconde)
 		if SystemType == 3 and (vehunlock or alarm) then
@@ -408,12 +387,17 @@ Citizen.CreateThread(function()
 				StartVehicleAlarm(vehicle)
 				vehunlock = false
 			elseif not vehunlock and vehicle ~= nil and alarm and vehplate == vehicleData.plate then
-				Citizen.Wait(4 * seconde)
-				SetVehicleAlarm(vehicle, 1)
-				StartVehicleAlarm(vehicle)
+				alarmtime = (alarmtime + 2)
+				if alarmtime == 10 then
+					SetVehicleAlarm(vehicle, 1)
+					StartVehicleAlarm(vehicle)
+					alarmtime = 0
+				end
 				TriggerServerEvent('esx_ownedcarthief:alarmgps', true, false, coords.x, coords.y, coords.z)
+				Citizen.Wait(1 * seconde)
 			else
 				Citizen.Wait(1 * seconde)
+				alarmtime   = 9
 			end
 		end
 	end
@@ -438,7 +422,9 @@ RegisterCommand("test", function(source, args, rawCommand) --TEST ZONE
 end, false) -- set this to false to allow anyone.
 
 Citizen.CreateThread(function()
-		local blip = AddBlipForCoord(Config.Zones.PawnShop.Pos.x, Config.Zones.PawnShop.Pos.y, Config.Zones.PawnShop.Pos.z)
+local zone = Config.Zones
+	for i=1, #zone, 1 do
+		local blip = AddBlipForCoord(zone[i].Pos.x, zone[i].Pos.y, zone[i].z)
 		SetBlipSprite (blip, 488)
 		SetBlipDisplay(blip, 4)
 		SetBlipColour (blip, 1)
@@ -449,15 +435,19 @@ Citizen.CreateThread(function()
 		AddTextComponentString(_U('pawn_shop_blip'))
 		EndTextCommandSetBlipName(blip)
 		
+	end
+
 		while true do
 		Citizen.Wait(0)
-			DrawMarker(1,Config.Zones.PawnShop.Pos.x,Config.Zones.PawnShop.Pos.y,Config.Zones.PawnShop.Pos.z-1,0,0,0,0,0,0,5.001,5.0001,0.5001,255,0,0,200,0,0,0,0)
+			for i=1, #zone, 1 do
+				DrawMarker(1,zone[i].Pos.x,zone[i].Pos.y,zone[i].Pos.z-1,0,0,0,0,0,0,5.001,5.0001,0.5001,255,0,0,200,0,0,0,0)
 			
 			
-			if(isNear(Config.Zones.PawnShop.Pos)) then
-				Info(_U('pawn_shop_menu'))
-				if(IsControlJustPressed(1, 38)) then
-				OpenPawnshopMenu()
+				if(isNear(zone[i].Pos)) and (zone[i].Name) == "PawnShop" then
+					Info(_U('pawn_shop_menu'))
+					if(IsControlJustPressed(1, 38)) then
+					OpenPawnshopMenu()
+					end
 				end
 			end
 			

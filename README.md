@@ -1,5 +1,32 @@
 # esx_ownedcarthief Alpha 12
 
+Allows stolen vehicles to be owned by other players.
+
+Items
+-Hammer & wire cutter
+This tool can unlock a vehicle with a low rate of success but triggers alarm systems all the time.
+
+-Burglary tools (Illegal)
+This tool can unlock a vehicle with a normal pass rate and a low chance of triggering the alarm systems.
+
+-Signal jammer (Illegal)
+This tool allows a burglar to shut down advanced alarm systems once released into the vehicle
+
+-Interface of alarm system
+This tool allows a police officer to shut down advanced alarm systems.
+
+-Basic alarm system
+This system starts an audible alarm when an attempt is made to open a door without the key.
+
+- Alarm system connect to the central
+This system starts an audible alarm when an attempt is made to open a door without the key.
+This system sends the vehicle's position to the police officer if an attempt is made to open a door without the key.
+
+-High tech alarm system with GPS
+This system starts an audible alarm when an attempt is made to open a door without the key.
+This system sends the vehicle's position to the police officer if an attempt is made to open a door without the key.
+This system sends the vehicle's position in REAL-TIME to the policeman in case of starting the engine without the key.
+
 
 # Installation
 1. Download the .Zip from this repository.
@@ -20,6 +47,33 @@
 - Translation PT/BR - iKaoticx https://github.com/iKaoticx
 ___
 # esx_ownedcarthief Alpha 12
+
+Permet de volé les véhicules posseder par d'autre joueurs.
+
+Items
+-Marteau & coupe fil
+Cette outil peut déverrouiller un véhicule avec un taux de réusite faible mais déclanche les systems d'alarm a tout coup.
+
+-Outils de cambriolage (Illégal)
+Cette outil peut déverrouiller un véhicule avec un taux de réusite normal et une faible chance de déclanché les systems d'alarm.
+
+-Brouilleur de Signal (Illégal)
+Cette outil permet a un cambrioleur de couper les systems d'alarm avancé une fois déclanché dans le véhicule
+
+-Interface de système d'alarm
+Cette outil permet a un policier de couper les systems d'alarm avancé.
+
+-Système d'alarm de base
+Ce system démarre une alarme sonore en cas de tentative d'ouverture d'une porte sans la clé.
+
+-Système d'alarm relier a la central
+Ce system démarre une alarme sonore en cas de tentative d'ouverture d'une porte sans la clé.
+Ce system envoie la position du véhicule au policier en cas de tentative d'ouverture d'une porte sans la clé.
+
+-Système d'alarm high tech avec GPS
+Ce system démarre une alarme sonore en cas de tentative d'ouverture d'une porte sans la clé.
+Ce system envoie la position du véhicule au policier en cas de tentative d'ouverture d'une porte sans la clé.
+Ce system envoie la position du véhicule EN TEMPS RÉEL au policier en cas de de démarrage du moteur sans la clé.
 
 
 # Installation
