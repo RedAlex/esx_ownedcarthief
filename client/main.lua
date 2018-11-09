@@ -119,9 +119,8 @@ local itemused        = item
 	TriggerServerEvent('esx_ownedcarthief:howmanycops')
 	ESX.UI.Menu.CloseAll()
 	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 3.0) and vehicleData ~= nil then
-		ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken)
+		ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken, alarmsystem)
 			if isPlateTaken then
-				ESX.TriggerServerCallback('esx_ownedcarthief:alarminstall', function (alarmsystem)
 					TriggerServerEvent('esx_ownedcarthief:itemused', itemused)
 					SystemType = alarmsystem
 					if itemused == "hammerwirecutter" then
@@ -154,7 +153,6 @@ local itemused        = item
 						Citizen.Wait(2.5 * seconde)
 						TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
 					end
-				end, vehicleData.plate)
 
 			elseif not isPlateTaken and not Config.OnlyPlayerCar then
 				TriggerServerEvent('esx_ownedcarthief:itemused', itemused)

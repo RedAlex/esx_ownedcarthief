@@ -52,18 +52,8 @@ ESX.RegisterServerCallback('esx_ownedcarthief:isPlateTaken', function (source, c
     MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
         ['@plate'] = plate
     }, function (result)
-        cb(result[1] ~= nil)
+        cb(result[1] ~= nil, result[1].security)
     end)
-end)
-
-ESX.RegisterServerCallback('esx_ownedcarthief:alarminstall', function (source, cb, plate) --Ici on vérify quel system est installer sur le véhicule
-	
-	 MySQL.Async.fetchScalar('SELECT security FROM owned_vehicles WHERE  @plate = plate',
-    {
-        ['@plate'] = plate
-    }, function(security)
-		cb(security)
-	end)
 end)
 
 RegisterServerEvent('esx_ownedcarthief:buyitem')
