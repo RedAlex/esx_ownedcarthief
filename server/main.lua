@@ -25,8 +25,8 @@ AddEventHandler('esx_ownedcarthief:alarmgps', function(status, txt, gx, gy, gz)
 	local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
 		if xPlayer.job.name == 'police' then
 			TriggerClientEvent('esx_ownedcarthief:GPSBlip', xPlayers[i], netID, AlarmStatus)
-			if AlarmStatus and info then
-				TriggerClientEvent('esx_ownedcarthief:911', xPlayers[i], gx, gy, gz, 1)
+			if AlarmStatus then
+				TriggerClientEvent('esx_ownedcarthief:911', xPlayers[i], gx, gy, gz, 0.5)
 				if info then
 					TriggerClientEvent('esx:showNotification', xPlayers[i], _U('911'))
 				end
