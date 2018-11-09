@@ -117,7 +117,7 @@ local itemused        = item
 	  vehplate        = vehicleData.plate
 
 	TriggerServerEvent('esx_ownedcarthief:howmanycops')
-
+	ESX.UI.Menu.CloseAll()
 	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 3.0) and vehicleData ~= nil then
 		ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken)
 			if isPlateTaken then
@@ -395,6 +395,7 @@ end)
 
 Citizen.CreateThread(function()
 	local playerPed   = PlayerPedId()
+	local alarmtime   = 9
 	while true do
 		Citizen.Wait(1 * seconde)
 		if SystemType == 3 and (vehunlock or alarm) then
@@ -408,12 +409,16 @@ Citizen.CreateThread(function()
 				StartVehicleAlarm(vehicle)
 				vehunlock = false
 			elseif not vehunlock and vehicle ~= nil and alarm and vehplate == vehicleData.plate then
-				Citizen.Wait(4 * seconde)
-				SetVehicleAlarm(vehicle, 1)
-				StartVehicleAlarm(vehicle)
+				alarmtime = (alarmtime + 1)
+				if alarmtime == 10 then
+					SetVehicleAlarm(vehicle, 1)
+					StartVehicleAlarm(vehicle)
+					alarmtime = 0
+				end
 				TriggerServerEvent('esx_ownedcarthief:alarmgps', true, false, coords.x, coords.y, coords.z)
 			else
 				Citizen.Wait(1 * seconde)
+				alarmtime   = 9
 			end
 		end
 	end
