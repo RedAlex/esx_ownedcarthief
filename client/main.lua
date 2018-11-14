@@ -276,8 +276,7 @@ function OpenPawnshopMenu()
 			local zone = Config.Zones
 			for i=1, #zone, 1 do
 					if (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_resell' then
-						--ICI ON VEND UN VEHICULE VOLÉ
-						ESX.ShowNotification("In Build")
+						SellStolenCar()
 					elseif (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_rebuy' then
 						--ICI ON RACHETE UN VEHICULE QUI A ÉTÉ VOLÉ
 						ESX.ShowNotification("In Build")
@@ -290,6 +289,38 @@ function OpenPawnshopMenu()
 	 end
 	
 	)
+end
+
+function SellStolenCar()
+local playerPed   = PlayerPedId()
+local veh         = GetVehiclePedIsIn(playerPed, false)
+local vehicleData = ESX.Game.GetVehicleProperties(veh)
+local carfound    = false
+
+	if GetPedInVehicleSeat(veh, -1) == playerPed then
+		ESX.TriggerServerCallback('esx_ownedcarthief:GetVehPrice', function (vehicles)
+			ESX.ShowNotification(_U('checkvehicle'))
+			Citizen.CreateThread(function()
+				for i=1, #vehicles, 1 do
+					Citizen.Wait(1)
+					local vehicle = vehicles[i]
+
+					if vehicleData.model == GetHashKey(vehicle.model) then
+						price = math.floor(vehicle.price / 100 * Config.ResellPercentage) 
+						ESX.Game.DeleteVehicle(veh)
+						TriggerServerEvent('esx_ownedcarthief:VehSold', true, price, vehicleData.plate)
+						carfound = true
+						break
+					end
+				end
+				if not Config.OnlyPlayerCar and not carfound then
+					price = Config.NpcCarPrice
+					ESX.Game.DeleteVehicle(veh)
+					TriggerServerEvent('esx_ownedcarthief:VehSold', false, price, vehicleData.plate)
+				end
+			end)
+		end, vehicleData.plate)
+	end
 end
 
 function OpenPawnshopMenu2()

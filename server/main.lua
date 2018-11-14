@@ -1,8 +1,59 @@
 ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
-  RegisterServerEvent('esx_ownedcarthief:callcops')
-  AddEventHandler('esx_ownedcarthief:callcops', function(gx, gy, gz)
+local vehicles = nil
+
+ESX.RegisterServerCallback('esx_ownedcarthief:GetVehPrice', function (source, cb, plate)
+local vehiclefound = false
+local _model       = model
+	if vehicles == nil then
+		vehicles = MySQL.Sync.fetchAll('SELECT * FROM vehicles')
+	end
+		MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
+			['@plate'] = plate
+		}, function (result)
+
+			if (result ~= nil) then
+				cb(vehicles)
+			end
+		end)
+end)
+
+RegisterServerEvent('esx_ownedcarthief:VehSold')
+AddEventHandler('esx_ownedcarthief:VehSold', function(owned, price, plate)
+local _source = source
+local xPlayer = ESX.GetPlayerFromId(_source)
+local vehicle = {}
+	xPlayer.addMoney(price)
+	TriggerClientEvent('esx:showNotification', _source, _U('vehicle_sold', price))
+	if owned then
+		MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', 
+			{
+				['@plate'] = plate
+			}, function (result)
+			if (result ~= nil) then
+				for i=1, #result, 1 do
+					vehicle = result[i]
+					MySQL.Async.execute('INSERT INTO pawnshop_vehicles (owner, security, plate, vehicle) VALUES (@owner, @security, @plate, @vehicle)',
+					{
+						['@owner']    = vehicle.owner,
+						['@security'] = vehicle.security,
+						['@plate']    = vehicle.plate,
+						['@vehicle']  = vehicle.vehicle
+					},	function (rowsChanged)
+					end) 
+					MySQL.Async.execute('DELETE FROM owned_vehicles WHERE plate = @plate', {
+						['@plate'] = plate
+					})
+				end
+			end
+		end)
+	end
+end)
+
+
+RegisterServerEvent('esx_ownedcarthief:callcops')
+AddEventHandler('esx_ownedcarthief:callcops', function(gx, gy, gz)
 	  
 	local xPlayers = ESX.GetPlayers()	  
 		for i=1, #xPlayers, 1 do
@@ -37,15 +88,15 @@ end)
 
 RegisterServerEvent('esx_ownedcarthief:howmanycops')
 AddEventHandler('esx_ownedcarthief:howmanycops', function()
-  local xPlayers = ESX.GetPlayers()
-  local cops = 0
+	local xPlayers = ESX.GetPlayers()
+	local cops = 0
 	for i=1, #xPlayers, 1 do
 	local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
 		if xPlayer.job.name == 'police' then
 			cops = cops + 1
 		end
 	end
-TriggerClientEvent('esx_ownedcarthief:howmanycops2', source, cops)
+	TriggerClientEvent('esx_ownedcarthief:howmanycops2', source, cops)
 end)
 
 ESX.RegisterServerCallback('esx_ownedcarthief:isPlateTaken', function (source, cb, plate) --Ici on vérify si la plaque est dans la base de donnée

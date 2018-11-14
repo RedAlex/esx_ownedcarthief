@@ -1,4 +1,4 @@
-# esx_ownedcarthief Alpha 12
+# esx_ownedcarthief Alpha 14
 
 Allows stolen vehicles to be owned by other players.
 
@@ -39,14 +39,16 @@ This system sends the vehicle's position in REAL-TIME to the policeman in case o
 # Required resource
 - EssentialMode 5.0.3
 - Async 2.0
-- Esx 
+- Esx
+- esx_vehicleshop
 
 # Created by
 - Code - Alex Garcio     https://github.com/RedAlex
 - Code - Alain Proviste  https://github.com/EagleOnee
 - Translation PT/BR - iKaoticx https://github.com/iKaoticx
+- Code based on the resources of https://github.com/ESX-Org
 ___
-# esx_ownedcarthief Alpha 12
+# esx_ownedcarthief Alpha 14
 
 Permet de volé les véhicules posseder par d'autre joueurs.
 
@@ -87,15 +89,17 @@ Ce system envoie la position du véhicule EN TEMPS RÉEL au policier en cas de d
 # Ressource requis
 - EssentialMode 5.0.3
 - Async 2.0
-- Esx 
+- Esx
+- esx_vehicleshop
 
 
 # Créer par
 - Code - Alex Garcio    https://github.com/RedAlex
 - Code - Alain Proviste https://github.com/EagleOnee
 - Traduction PT/BR - iKaoticx https://github.com/iKaoticx
+- Code basé sur les ressource de https://github.com/ESX-Org
 ___
-# esx_ownedcarthief Alpha 12 
+# esx_ownedcarthief Alpha 14
 
 # Instalação
 1. Download o arquivo esx_ownedcarthief.zip neste github.
@@ -107,9 +111,11 @@ ___
 # Resources requeridos
 - EssentialMode 5.0.3
 - Async 2.0 
-- Esx 
+- Esx
+- esx_vehicleshop
 
 # Criado por
 - Script - Alex Garcio     https://github.com/RedAlex
 - Script - Alain Proviste  https://github.com/EagleOnee
 - Trandução PT/BR - iKaoticx https://github.com/iKaoticx
+- Código baseado nos recursos de https://github.com/ESX-Org

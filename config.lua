@@ -1,16 +1,19 @@
 Config = {}
 
 -- GENERAL SETTING
-Config.SuccesChance  = 60   --How many % of chance to unlock a car. 0-100
-Config.OnlyPlayerCar = true --Set false if you want to picklock work on npc car
-Config.Locale        = 'fr'
+Config.SuccesChance  = 60   --How many % of chance to unlock a car. (0-100)
+Config.OnlyPlayerCar = true --Set false if you want to picklock work on npc car (true-false)
+Config.Locale        = 'fr' --Set lang (fr-en-br)
 
 -- POLICE
-Config.PoliceNumberRequired = 0    --Set how many cops is need to try stole a car. 0-32
-Config.AlertPolice          = true --Turn to false if you don't want cops is called on car alarm start for player car.
-Config.CallCopsChance       = 60   --How many % of chance for the car alarm start AND call cops. 0-100
-Config.BlipTime             = 40   --Set how many time a blip keep flash on map.
+Config.PoliceNumberRequired = 0    --Set how many cops is need to try stole a car. (0-32)
+Config.AlertPolice          = true --Turn to false if you don't want cops is called on car alarm start for player car. (true-false)
+Config.CallCopsChance       = 60   --How many % of chance for the car alarm start AND call cops. (0-100)
+Config.BlipTime             = 40   --Set how many time a blip keep flash on map. (1-200)
 
+-- PAWNSHOP SETTING
+Config.ResellPercentage = 10 	--Percent of original car price player get from selling car (1-100)
+Config.NpcCarPrice      = 100 --Set the sell price for npc car (1-100000000.....)
 
 --SHOPS ZONES
 Config.Zones = {
