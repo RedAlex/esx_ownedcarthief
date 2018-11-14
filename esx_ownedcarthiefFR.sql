@@ -5,6 +5,7 @@ CREATE TABLE `pawnshop_vehicles` (
 	`security` int(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system state',
 	`plate` varchar(12) NOT NULL,
 	`vehicle` longtext,
+	`price` int(15) NOT NULL,
 
 	PRIMARY KEY (`plate`)
 );

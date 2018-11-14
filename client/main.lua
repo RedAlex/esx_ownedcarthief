@@ -268,21 +268,20 @@ function OpenPawnshopMenu()
 		align    = 'left',
 		elements = {
 			{label = _U('pawnshop_resell'),  value = 'pawnshop_resell'},
-			{label = _U('pawnshop_rebuy'),  value = 'pawnshop_rebuy'},
-			{label = _U('pawnshop_buyitem'),  value = 'pawnshop_buyitem'}
+			{label = _U('pawnshop_rebuy'),   value = 'pawnshop_rebuy'},
+			{label = _U('pawnshop_buyitem'), value = 'pawnshop_buyitem'}
 		},
 	}, function(data, menu)
 			menu.close()
 			local zone = Config.Zones
 			for i=1, #zone, 1 do
-					if (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_resell' then
-						SellStolenCar()
-					elseif (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_rebuy' then
-						--ICI ON RACHETE UN VEHICULE QUI A ÉTÉ VOLÉ
-						ESX.ShowNotification("In Build")
-					elseif (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_buyitem' then
-						OpenPawnshopMenu2()
-					end
+				if (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_resell' then
+					SellStolenCar()
+				elseif (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_rebuy' then
+					OpenPawnshopMenu3()
+				elseif (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_buyitem' then
+					OpenPawnshopMenu2()
+				end
 			end
 	end, function(data, menu)
 		menu.close()
@@ -348,6 +347,44 @@ function OpenPawnshopMenu2()
 		ESX.UI.Menu.CloseAll()
 	end
 	)
+end
+
+function OpenPawnshopMenu3()
+	local elements = {}
+	local VehPrice = nil
+
+	ESX.TriggerServerCallback('esx_ownedcarthief:getpawnshopvehicle', function(vehicles)
+
+		for i=1, #vehicles, 1 do
+			local vehicle      = vehicles[i].vehicle
+			local VehDecode    = json.decode(vehicle.vehicle)
+			local VehModel     = VehDecode.model
+    		local VehicleName  = GetDisplayNameFromVehicleModel(VehModel)
+			      VehPrice     = math.floor(vehicle.price / Config.ResellPercentage * Config.RebuyPercentage)
+    		local labelvehicle = (VehicleName .." ".. VehPrice .."$")
+
+			table.insert(elements, {label =labelvehicle, value = vehicle})
+			
+		end
+
+		ESX.UI.Menu.Open(
+		'default', GetCurrentResourceName(), 'pawnshop3',
+		{
+			title    = _U('pawnshop_menu_title'),
+			align    = 'left',
+			elements = elements,
+		},
+		function(data, menu)
+			if (data.current.value) then
+				menu.close()
+				local veh = data.current.value
+				TriggerServerEvent('esx_ownedcarthief:VehBuy', veh, VehPrice)
+			end
+		end, function(data, menu)
+			ESX.UI.Menu.CloseAll()
+		end
+	)	
+	end)
 end
 
 function Info(text, loop)

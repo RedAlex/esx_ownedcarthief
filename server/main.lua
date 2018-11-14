@@ -19,6 +19,32 @@ local _model       = model
 		end)
 end)
 
+RegisterServerEvent('esx_ownedcarthief:VehBuy')
+AddEventHandler('esx_ownedcarthief:VehBuy', function(data, price)
+	local vehicle  = data
+	local buyprice = price
+	local _source  = source
+	local xPlayer  = ESX.GetPlayerFromId(_source)
+
+	if xPlayer.getMoney() >= buyprice then
+		xPlayer.removeMoney(buyprice)
+		TriggerClientEvent('esx:showNotification', _source, _U('vehicle_buy', buyprice))
+			MySQL.Async.execute('INSERT INTO owned_vehicles (owner, security, plate, vehicle) VALUES (@owner, @security, @plate, @vehicle)',
+				{
+					['@owner']    = vehicle.owner,
+					['@security'] = vehicle.security,
+					['@plate']    = vehicle.plate,
+					['@vehicle']  = vehicle.vehicle
+				},	function (rowsChanged)
+				end) 
+			MySQL.Async.execute('DELETE FROM pawnshop_vehicles WHERE plate = @plate', {
+				['@plate'] = vehicle.plate
+			})
+	else
+		TriggerClientEvent('esx:showNotification', _source, _U('not_enough_money'))
+	end
+end)
+
 RegisterServerEvent('esx_ownedcarthief:VehSold')
 AddEventHandler('esx_ownedcarthief:VehSold', function(owned, price, plate)
 local _source = source
@@ -34,12 +60,13 @@ local vehicle = {}
 			if (result ~= nil) then
 				for i=1, #result, 1 do
 					vehicle = result[i]
-					MySQL.Async.execute('INSERT INTO pawnshop_vehicles (owner, security, plate, vehicle) VALUES (@owner, @security, @plate, @vehicle)',
+					MySQL.Async.execute('INSERT INTO pawnshop_vehicles (owner, security, plate, vehicle, price) VALUES (@owner, @security, @plate, @vehicle, @price)',
 					{
 						['@owner']    = vehicle.owner,
 						['@security'] = vehicle.security,
 						['@plate']    = vehicle.plate,
-						['@vehicle']  = vehicle.vehicle
+						['@vehicle']  = vehicle.vehicle,
+						['@price']    = price
 					},	function (rowsChanged)
 					end) 
 					MySQL.Async.execute('DELETE FROM owned_vehicles WHERE plate = @plate', {
@@ -51,6 +78,19 @@ local vehicle = {}
 	end
 end)
 
+ESX.RegisterServerCallback('esx_ownedcarthief:getpawnshopvehicle', function(source, cb)
+	local _source = source
+	local xPlayer = ESX.GetPlayerFromId(_source)
+	local vehicles = {}
+
+	MySQL.Async.fetchAll("SELECT * FROM pawnshop_vehicles WHERE owner=@identifier",{['@identifier'] = xPlayer.getIdentifier()}, function(result)
+		for i=1, #result, 1 do
+			local vehicle = result[i]
+			table.insert(vehicles, {vehicle = vehicle})
+		end
+		cb(vehicles)
+	end)
+end)
 
 RegisterServerEvent('esx_ownedcarthief:callcops')
 AddEventHandler('esx_ownedcarthief:callcops', function(gx, gy, gz)
