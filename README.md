@@ -1,4 +1,4 @@
-# esx_ownedcarthief Alpha 14
+# esx_ownedcarthief Beta 14
 
 Allows stolen vehicles to be owned by other players.
 
@@ -18,7 +18,7 @@ This tool allows a police officer to shut down advanced alarm systems.
 -Basic alarm system
 This system starts an audible alarm when an attempt is made to open a door without the key.
 
-- Alarm system connect to the central
+-Alarm system connect to the central
 This system starts an audible alarm when an attempt is made to open a door without the key.
 This system sends the vehicle's position to the police officer if an attempt is made to open a door without the key.
 
@@ -40,7 +40,7 @@ This system sends the vehicle's position in REAL-TIME to the policeman in case o
 - EssentialMode 5.0.3
 - Async 2.0
 - Esx
-- esx_vehicleshop
+- esx_vehicleshop actual version
 
 # Created by
 - Code - Alex Garcio     https://github.com/RedAlex
@@ -48,7 +48,7 @@ This system sends the vehicle's position in REAL-TIME to the policeman in case o
 - Translation PT/BR - iKaoticx https://github.com/iKaoticx
 - Code based on the resources of https://github.com/ESX-Org
 ___
-# esx_ownedcarthief Alpha 14
+# esx_ownedcarthief Beta 14
 
 Permet de volé les véhicules posseder par d'autre joueurs.
 
@@ -90,7 +90,7 @@ Ce system envoie la position du véhicule EN TEMPS RÉEL au policier en cas de d
 - EssentialMode 5.0.3
 - Async 2.0
 - Esx
-- esx_vehicleshop
+- esx_vehicleshop Version actuel
 
 
 # Créer par
@@ -99,7 +99,7 @@ Ce system envoie la position du véhicule EN TEMPS RÉEL au policier en cas de d
 - Traduction PT/BR - iKaoticx https://github.com/iKaoticx
 - Code basé sur les ressource de https://github.com/ESX-Org
 ___
-# esx_ownedcarthief Alpha 14
+# esx_ownedcarthief Beta 14
 
 # Instalação
 1. Download o arquivo esx_ownedcarthief.zip neste github.
@@ -112,7 +112,7 @@ ___
 - EssentialMode 5.0.3
 - Async 2.0 
 - Esx
-- esx_vehicleshop
+- esx_vehicleshop Versão Atual
 
 # Criado por
 - Script - Alex Garcio     https://github.com/RedAlex
