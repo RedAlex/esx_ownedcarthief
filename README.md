@@ -1,6 +1,6 @@
 # esx_ownedcarthief Beta 14
 
-Allows stolen vehicles to be owned by other players.
+Allows stolen & sold vehicles owned by other players.
 
 Items
 -Hammer & wire cutter
@@ -50,7 +50,7 @@ This system sends the vehicle's position in REAL-TIME to the policeman in case o
 ___
 # esx_ownedcarthief Beta 14
 
-Permet de volé les véhicules posseder par d'autre joueurs.
+Permet de volé et de vendre les véhicules posseder par d'autre joueurs.
 
 Items
 -Marteau & coupe fil

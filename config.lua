@@ -45,6 +45,10 @@ Config.Zones = {
 --ITEMS PRICES
 Config.Prices = {
   {name = "hammerwirecutter", price = 100,},
-  {name = "unlockingtool",    price = 200,},
-  {name = "jammer",           price = 300}
+  {name = "unlockingtool",    price = 1000,},
+  {name = "jammer",           price = 10000,},
+  {name = "alarm1",           price = 10000,},
+  {name = "alarm2",           price = 20000,},
+  {name = "alarm3",           price = 30000,},
+  {name = "alarminterface",   price = 100}
 }
