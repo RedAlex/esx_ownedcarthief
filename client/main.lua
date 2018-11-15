@@ -103,6 +103,16 @@ local XBlipTime = blipt
 	end
 end)
 
+RegisterNetEvent('esx_ownedcarthief:useitemalarm')
+AddEventHandler('esx_ownedcarthief:useitemalarm', function(data)
+	local AlarmType = data
+	local Vehicle   = ESX.Game.GetVehicleInDirection()
+		if Vehicle ~= nil then
+			local vehicleData = ESX.Game.GetVehicleProperties(Vehicle)
+			TriggerServerEvent('esx_ownedcarthief:installalarm', vehicleData.plate, AlarmType)
+		end
+end)
+
 RegisterNetEvent('esx_ownedcarthief:stealcar')
 AddEventHandler('esx_ownedcarthief:stealcar', function(item)
 

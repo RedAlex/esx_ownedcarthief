@@ -139,7 +139,7 @@ AddEventHandler('esx_ownedcarthief:howmanycops', function()
 	TriggerClientEvent('esx_ownedcarthief:howmanycops2', source, cops)
 end)
 
-ESX.RegisterServerCallback('esx_ownedcarthief:isPlateTaken', function (source, cb, plate) --Ici on vérify si la plaque est dans la base de donnée
+ESX.RegisterServerCallback('esx_ownedcarthief:isPlateTaken', function (source, cb, plate)
     MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
         ['@plate'] = plate
     }, function (result)
@@ -147,6 +147,57 @@ ESX.RegisterServerCallback('esx_ownedcarthief:isPlateTaken', function (source, c
 			cb(result[1] ~= nil, result[1].security)
 		else
 			cb(result[1] ~= nil)
+		end
+    end)
+end)
+
+RegisterServerEvent('esx_ownedcarthief:installalarm')
+AddEventHandler('esx_ownedcarthief:installalarm', function(plate, alarmtype)
+	local _source = source
+	local xPlayer = ESX.GetPlayerFromId(_source)
+    MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
+        ['@plate'] = plate
+    }, function (result)
+		if result[1] ~= nil then
+			if result[1].security == 3 then
+				TriggerClientEvent('esx:showNotification', _source, _U('alarm_max_lvl'))
+			elseif result[1].security == 2 then
+				if alarmtype == 3 then
+					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
+					xPlayer.removeInventoryItem('alarm3', 1)
+					TriggerClientEvent('esx:showNotification', _source, _U('alarm3_install'))
+				elseif alarmtype == 2 or alarmtype == 1 then
+					TriggerClientEvent('esx:showNotification', _source, _U('alarm_not_install'))
+				end
+			elseif result[1].security == 1 then
+				if alarmtype == 3 then
+					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
+					xPlayer.removeInventoryItem('alarm3', 1)
+					TriggerClientEvent('esx:showNotification', _source, _U('alarm3_install'))
+				elseif alarmtype == 2 then
+					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
+					xPlayer.removeInventoryItem('alarm2', 1)
+					TriggerClientEvent('esx:showNotification', _source, _U('alarm2_install'))
+				elseif alarmtype == 1 then
+					TriggerClientEvent('esx:showNotification', _source, _U('alarm_not_install'))
+				end
+			elseif result[1].security == 0 then
+				if alarmtype == 3 then
+					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
+					xPlayer.removeInventoryItem('alarm3', 1)
+					TriggerClientEvent('esx:showNotification', _source, _U('alarm3_install'))
+				elseif alarmtype == 2 then
+					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
+					xPlayer.removeInventoryItem('alarm2', 1)
+					TriggerClientEvent('esx:showNotification', _source, _U('alarm2_install'))
+				elseif alarmtype == 1 then
+					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
+					xPlayer.removeInventoryItem('alarm1', 1)
+					TriggerClientEvent('esx:showNotification', _source, _U('alarm1_install'))
+				end
+			end
+		else
+			TriggerClientEvent('esx:showNotification', _source, _U('not_work_with_npc'))
 		end
     end)
 end)
@@ -192,9 +243,9 @@ ESX.RegisterUsableItem('unlockingtool', function(source) --unlockingtool Medium 
 end)
 
 ESX.RegisterUsableItem('jammer', function(source) --GPS Jammer cut the signal of call cops
-    local _source = source
-    local xPlayer = ESX.GetPlayerFromId(_source)
-	local xPlayers    = ESX.GetPlayers()
+    local _source  = source
+    local xPlayer  = ESX.GetPlayerFromId(_source)
+	local xPlayers = ESX.GetPlayers()
 	
 	Citizen.Wait(3000)
 		for i=1, #xPlayers, 1 do
@@ -209,8 +260,8 @@ ESX.RegisterUsableItem('jammer', function(source) --GPS Jammer cut the signal of
 end)
 
 ESX.RegisterUsableItem('alarminterface', function(source) --Alarm system interface for cop usage, can cut an car gps alarm
-	local _source = source
-	local xPlayers    = ESX.GetPlayers()
+	local _source  = source
+	local xPlayers = ESX.GetPlayers()
 	
 	TriggerClientEvent('esx:showNotification', _source, _U('rucops'))
 	local xPlayer = ESX.GetPlayerFromId(_source)
@@ -229,19 +280,37 @@ ESX.RegisterUsableItem('alarminterface', function(source) --Alarm system interfa
 	end
 end)
 
-ESX.RegisterUsableItem('alarm1', function(source) --In Build
-    local _source = source
-	TriggerClientEvent('esx_ownedcarthief:*******', _source, "alarm1")
+ESX.RegisterUsableItem('alarm1', function(source)
+	local _source  = source
+	local xPlayers = ESX.GetPlayers()
+	local xPlayer  = ESX.GetPlayerFromId(_source)
+	if xPlayer.job.name == 'mecano' then
+		TriggerClientEvent('esx_ownedcarthief:useitemalarm', _source, 1)
+	else
+		TriggerClientEvent('esx:showNotification', _source, _U('not_mecano'))
+	end
 end)
 
-ESX.RegisterUsableItem('alarm2', function(source) --In Build
-    local _source = source
-	TriggerClientEvent('esx_ownedcarthief:*******', _source, "alarm2")
+ESX.RegisterUsableItem('alarm2', function(source)
+	local _source  = source
+	local xPlayers = ESX.GetPlayers()
+	local xPlayer  = ESX.GetPlayerFromId(_source)
+	if xPlayer.job.name == 'mecano' then
+		TriggerClientEvent('esx_ownedcarthief:useitemalarm', _source, 2)
+	else
+		TriggerClientEvent('esx:showNotification', _source, _U('not_mecano'))
+	end
 end)
 
-ESX.RegisterUsableItem('alarm3', function(source) --In Build
-    local _source = source
-	TriggerClientEvent('esx_ownedcarthief:******', _source, "alarm3")
+ESX.RegisterUsableItem('alarm3', function(source)
+	local _source  = source
+	local xPlayers = ESX.GetPlayers()
+	local xPlayer  = ESX.GetPlayerFromId(_source)
+	if xPlayer.job.name == 'mecano' then
+		TriggerClientEvent('esx_ownedcarthief:useitemalarm', _source, 3)
+	else
+		TriggerClientEvent('esx:showNotification', _source, _U('not_mecano'))
+	end
 end)
 
 RegisterServerEvent('esx_ownedcarthief:itemused')

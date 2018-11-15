@@ -1,5 +1,10 @@
 Locales['fr'] = {
   ['911']                 = '~g~Central~s~ : Une alarme de véhicule a été activer a ces coordonnés.',
+  ['alarm1_install']      = 'Le ~g~système d\'alarm de base~s~ a été ~r~installé~s~',
+  ['alarm2_install']      = 'Le ~g~système d\'alarm relier a la central~s~ a été ~r~installé~s~',
+  ['alarm3_install']      = 'Le ~g~système d\'alarm high tech avec GPS~s~ a été ~r~installé~s~',
+  ['alarm_max_lvl']       = 'Le ~g~système d\'alarm~s~ est déja au maximum',
+  ['alarm_not_install']   = 'Le ~g~système d\'alarm relier a la central~s~ a été ~r~installé~s~',
   ['checkvehicle']        = 'Un instant qu\'on vérify ce qu\'on a en stock',
   ['hammerwirecutter']    = 'marteau & coupe fil',
   ['illegalusedetect']    = '~r~UTILISATION NON AUTORISÉE DÉTECTÉE',
