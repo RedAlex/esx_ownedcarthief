@@ -461,7 +461,7 @@ end)
 
 Citizen.CreateThread(function()
 	local playerPed   = PlayerPedId()
-	local alarmtime   = 8
+	local alarmtime   = 0
 	while true do
 		Citizen.Wait(1 * seconde)
 		if SystemType == 3 and (vehunlock or alarm) then
@@ -476,7 +476,7 @@ Citizen.CreateThread(function()
 				vehunlock = false
 			elseif not vehunlock and vehicle ~= nil and alarm and vehplate == vehicleData.plate then
 				alarmtime = (alarmtime + 2)
-				if alarmtime == 10 then
+				if alarmtime >= 10 then
 					SetVehicleAlarm(vehicle, 1)
 					StartVehicleAlarm(vehicle)
 					alarmtime = 0
@@ -485,7 +485,7 @@ Citizen.CreateThread(function()
 				Citizen.Wait(1 * seconde)
 			else
 				Citizen.Wait(1 * seconde)
-				alarmtime   = 9
+				alarmtime   = 0
 			end
 		end
 	end
