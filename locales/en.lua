@@ -1,8 +1,12 @@
 Locales['en'] = {
   ['911']                 = '~g~Central~s~ : A vehicle alarm has been activated at these coordinates.',
+  ['alarm1']              = 'basic alarm system',
+  ['alarm2']              = 'alarm system connect to the central',
+  ['alarm3']              = 'high tech alarm system with GPS',
+  ['alarminterface']      = 'Alarm system interface',
   ['alarm1_install']      = 'The ~g~basic alarm system~s~ has been ~r~installed~s~',
-  ['alarm2_install']      = 'The ~g~alarm system connect to the central~s~ has been ~r~installed~s~'
-  ['alarm3_install']      = 'The ~g~high tech alarm system with GPS~s~ has been ~r~installed~s~'
+  ['alarm2_install']      = 'The ~g~alarm system connect to the central~s~ has been ~r~installed~s~',
+  ['alarm3_install']      = 'The ~g~high tech alarm system with GPS~s~ has been ~r~installed~s~',
   ['alarm_max_lvl']       = 'The ~g~alarm system~s~ is already at the maximum',
   ['alarm_not_install']   = 'The ~g~alarm system~s~ can not be installed',
   ['checkvehicle']        = 'A moment that we check what we have in stock',

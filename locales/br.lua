@@ -1,8 +1,12 @@
 Locales['br'] = {
   ['911']                 = '~g~Central~s~ : O alarme anti-roubo de um veículo foi disparado na area indicadas.',
-  ['alarm1_install']      = 'O ~g~ sistema basico de alarme~s~ foi ~r~instalado~s~',
-  ['alarm2_install']      = 'O ~g~sistema de alarme com conexão a policia~s~ foi ~r~instalado~s~'
-  ['alarm3_install']      = 'O ~g~sistema de  alarme dealta tecnologia com GPS~s~ foi ~r~instalado~s~'
+  ['alarm1']              = 'sistema basico de alarme',
+  ['alarm2']              = 'sistema de alarme com conexão a policia',
+  ['alarm3']              = 'sistema de alarme de alta tecnologia com GPS',
+  ['alarminterface']      = 'Interface do sistema de alarme',
+  ['alarm1_install']      = 'O ~g~sistema basico de alarme~s~ foi ~r~instalado~s~',
+  ['alarm2_install']      = 'O ~g~sistema de alarme com conexão a policia~s~ foi ~r~instalado~s~',
+  ['alarm3_install']      = 'O ~g~sistema de alarme de alta tecnologia com GPS~s~ foi ~r~instalado~s~',
   ['alarm_max_lvl']       = 'O ~g~sistema de alarme~s~ instalado já é o melhor disponivél',
   ['alarm_not_install']   = 'O ~g~sistema de alarme~s~ não pode ser instalado.',
   ['checkvehicle']        = 'Um momento estamos checando o nosso estoque',

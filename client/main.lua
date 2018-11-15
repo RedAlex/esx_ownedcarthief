@@ -336,16 +336,25 @@ end
 function OpenPawnshopMenu2()
 	ESX.UI.Menu.CloseAll()
 
+	local menuelements = {
+			{label = _U('pawnshop_buy') .. ' ' .. _('hammerwirecutter'),  value = 'hammerwirecutter'},
+			{label = _U('pawnshop_buy') .. ' ' .. _('jammer'),  value = 'jammer'},
+			{label = _U('pawnshop_buy') .. ' ' .. _('unlockingtool'),  value = 'unlockingtool'}
+		}
+	if PlayerData.job.name == 'police' then
+		table.insert(menuelements, {label = _U('pawnshop_buy') .. ' ' .. _('alarminterface'),  value = 'alarminterface'})
+	end
+	if PlayerData.job.name == 'mecano' then
+		table.insert(menuelements, {label = _U('pawnshop_buy') .. ' ' .. _('alarm1'),  value = 'alarm1'})
+		table.insert(menuelements, {label = _U('pawnshop_buy') .. ' ' .. _('alarm2'),  value = 'alarm2'})
+		table.insert(menuelements, {label = _U('pawnshop_buy') .. ' ' .. _('alarm3'),  value = 'alarm3'})
+	end
 	ESX.UI.Menu.Open(
 	'default', GetCurrentResourceName(), 'pawnshop2',
 	{
 		title    = _U('pawnshop_menu_title'),
 		align    = 'left',
-		elements = {
-			{label = _U('pawnshop_buy') .. ' ' .. _('hammerwirecutter'),  value = 'hammerwirecutter'},
-			{label = _U('pawnshop_buy') .. ' ' .. _('jammer'),  value = 'jammer'},
-			{label = _U('pawnshop_buy') .. ' ' .. _('unlockingtool'),  value = 'unlockingtool'}
-		},
+		elements = menuelements,
 	}, function(data, menu)
 		menu.close()
 	  	local zone = Config.Zones
