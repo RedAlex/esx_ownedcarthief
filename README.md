@@ -1,6 +1,8 @@
 # esx_ownedcarthief Beta 14
 
 Allows stolen & sold vehicles owned by other players.
+Player need to contact a mecano to install one of the 3 alarm system on ther car.
+Only mecano can buy alarm system in the pawnshop and install it on a car.
 
 Items
 -Hammer & wire cutter
@@ -51,6 +53,8 @@ ___
 # esx_ownedcarthief Beta 14
 
 Permet de volé et de vendre les véhicules posseder par d'autre joueurs.
+Le joueur doit contacter un mécano pour installer l’un des 3 systèmes d’alarme sur la voiture.
+Seul le mécano peut acheter un système d'alarme dans le prêteur sur gages et l'installer sur une voiture.
 
 Items
 -Marteau & coupe fil
@@ -100,6 +104,36 @@ Ce system envoie la position du véhicule EN TEMPS RÉEL au policier en cas de d
 - Code basé sur les ressource de https://github.com/ESX-Org
 ___
 # esx_ownedcarthief Beta 14
+
+Permite roubar veículo de propiedade de outros jogadores.
+O jogador precisa entrar em contato com um mecânico para instalar um dos 3 sistemas de alarme no carro.
+Somente o mecânico pode comprar sistema de alarme na casa de penhores e instalar em um carro.
+
+Items
+-Hammer & wirecutter
+Esta ferramenta pode desbloquear um veículo com uma baixa taxa de sucesso, mas e sistemas de alarme o tempo todo.
+
+-Ferramentas de arrombamento (ilegal)
+Esta ferramenta pode desbloquear um veículo com uma taxa de sucesso mediana e uma baixa chance de acionar os sistemas de alarme.
+
+- Bloqueador de sinal
+Esta ferramenta permite que um ladrão desligue os sistemas de alarme avançados, uma vez ativados no veículo
+
+-Interface do sistema de alarme
+Essa ferramenta permite que um policial desligue os sistemas de alarme avançados.
+
+-Sistema de alarme básico
+Este sistema inicia um alarme sonoro quando é feita uma tentativa de abrir uma porta sem a chave.
+
+-Sistema de alarme conectar-se à central
+Este sistema inicia um alarme sonoro quando é feita uma tentativa de abrir uma porta sem a chave.
+Este sistema envia a posição do veículo ao policial se for feita uma tentativa de abrir uma porta sem a chave.
+
+-Sistema de alarme de alta tecnologia com GPS
+Este sistema inicia um alarme sonoro quando é feita uma tentativa de abrir uma porta sem a chave.
+Este sistema envia a posição do veículo ao policial se for feita uma tentativa de abrir uma porta sem a chave.
+Este sistema envia a posição do veículo em TEMPO REAL para o policial em caso o motor ligue sem a chave.
+
 
 # Instalação
 1. Download o arquivo esx_ownedcarthief.zip neste github.
