@@ -143,7 +143,11 @@ ESX.RegisterServerCallback('esx_ownedcarthief:isPlateTaken', function (source, c
     MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
         ['@plate'] = plate
     }, function (result)
-        cb(result[1] ~= nil, result[1].security)
+		if result[1] ~= nil then
+			cb(result[1] ~= nil, result[1].security)
+		else
+			cb(result[1] ~= nil)
+		end
     end)
 end)
 

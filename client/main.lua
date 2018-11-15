@@ -170,13 +170,14 @@ local itemused        = item
 
 				ShowTimer()
 
+				Citizen.Wait(math.random(1,21) * seconde)
 				if callcops <= Config.CallCopsChance then
-						if alarmsystem > 0 then
+						if math.random(1,101) <= 81 then
 							SetVehicleAlarm(vehicle, 1)
 						else
 							SetVehicleAlarm(vehicle, 0)
 						end
-						if alarmsystem >= 2 then
+						if math.random(1,101) <= 41 then
 							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)			
 						end
 						StartVehicleAlarm(vehicle)
