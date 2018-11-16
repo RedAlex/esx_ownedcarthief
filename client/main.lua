@@ -305,29 +305,31 @@ function SellStolenCar()
 local playerPed   = PlayerPedId()
 local veh         = GetVehiclePedIsIn(playerPed, false)
 local vehicleData = ESX.Game.GetVehicleProperties(veh)
-local carfound    = false
 
 	if GetPedInVehicleSeat(veh, -1) == playerPed then
-		ESX.TriggerServerCallback('esx_ownedcarthief:GetVehPrice', function (vehicles)
+		ESX.TriggerServerCallback('esx_ownedcarthief:GetVehPrice', function (ownedcar, vehicles)
 			ESX.ShowNotification(_U('checkvehicle'))
 			Citizen.CreateThread(function()
-				for i=1, #vehicles, 1 do
-					Citizen.Wait(1)
-					local vehicle = vehicles[i]
+				if ownedcar then
+					for i=1, #vehicles, 1 do
+						Citizen.Wait(1)
+						local vehicle = vehicles[i]
 
-					if vehicleData.model == GetHashKey(vehicle.model) then
-						price = math.floor(vehicle.price / 100 * Config.ResellPercentage) 
-						ESX.Game.DeleteVehicle(veh)
-						TriggerServerEvent('esx_ownedcarthief:VehSold', true, price, vehicleData.plate)
-						carfound = true
-						break
+						if vehicleData.model == GetHashKey(vehicle.model) then
+							price = math.floor(vehicle.price / 100 * Config.ResellPercentage) 
+							ESX.Game.DeleteVehicle(veh)
+							TriggerServerEvent('esx_ownedcarthief:VehSold', true, price, vehicleData.plate)
+							break
+						end
 					end
-				end
-				if not Config.OnlyPlayerCar and not carfound then
+				elseif not Config.OnlyPlayerCar and not ownedcar then
 					price = Config.NpcCarPrice
 					ESX.Game.DeleteVehicle(veh)
 					TriggerServerEvent('esx_ownedcarthief:VehSold', false, price, vehicleData.plate)
+				elseif Config.OnlyPlayerCar and not ownedcar then
+					ESX.ShowNotification(_U('not_work_with_npc'))
 				end
+
 			end)
 		end, vehicleData.plate)
 	end

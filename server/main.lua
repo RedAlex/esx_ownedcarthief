@@ -12,10 +12,7 @@ local _model       = model
 		MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
 			['@plate'] = plate
 		}, function (result)
-
-			if (result ~= nil) then
-				cb(vehicles)
-			end
+			cb(result[1] ~= nil, vehicles)
 		end)
 end)
 
