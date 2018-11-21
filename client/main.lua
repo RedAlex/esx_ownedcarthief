@@ -272,16 +272,32 @@ end
 function OpenPawnshopMenu()
 	ESX.UI.Menu.CloseAll()
 
+	local cantsellcar = false
+	      PlayerData  = ESX.GetPlayerData()
+
+	for i=1, #Config.PawnShopBLJob, 1 do
+		local BLJob = Config.PawnShopBLJob[i]
+		if PlayerData.job.name == BLJob.JobName then
+			cantsellcar = true
+		end
+	end
+
+	local menuelements = {
+		{label = _U('pawnshop_buyitem'), value = 'pawnshop_buyitem'},
+		{label = _U('pawnshop_rebuy'),   value = 'pawnshop_rebuy'}
+
+	}
+
+	if not cantsellcar then
+		table.insert(menuelements, {label = _U('pawnshop_resell'),  value = 'pawnshop_resell'})
+	end
+
 	ESX.UI.Menu.Open(
 	'default', GetCurrentResourceName(), 'pawnshop',
 	{
 		title    = _U('pawnshop_menu_title'),
 		align    = 'left',
-		elements = {
-			{label = _U('pawnshop_resell'),  value = 'pawnshop_resell'},
-			{label = _U('pawnshop_rebuy'),   value = 'pawnshop_rebuy'},
-			{label = _U('pawnshop_buyitem'), value = 'pawnshop_buyitem'}
-		},
+		elements = menuelements,
 	}, function(data, menu)
 			menu.close()
 			local zone = Config.Zones
@@ -336,6 +352,7 @@ local vehicleData = ESX.Game.GetVehicleProperties(veh)
 end
 
 function OpenPawnshopMenu2()
+	PlayerData = ESX.GetPlayerData()
 	ESX.UI.Menu.CloseAll()
 
 	local menuelements = {
