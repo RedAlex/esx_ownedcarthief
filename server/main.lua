@@ -55,7 +55,11 @@ AddEventHandler('esx_ownedcarthief:VehSold', function(owned, price, plate)
 local _source = source
 local xPlayer = ESX.GetPlayerFromId(_source)
 local vehicle = {}
-	xPlayer.addMoney(price)
+	if Config.SellCarBlackMoney then
+		xPlayer.addAccountMoney('black_money', price)
+	else
+		xPlayer.addMoney(price)
+	end
 	TriggerClientEvent('esx:showNotification', _source, _U('vehicle_sold', price))
 	if owned then
 		MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', 

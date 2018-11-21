@@ -12,10 +12,11 @@ Config.CallCopsChance       = 60   --How many % of chance for the car alarm star
 Config.BlipTime             = 40   --Set how many time a blip keep flash on map. (1-200)
 
 -- PAWNSHOP SETTING
-Config.ResellPercentage = 10  --Percent of original car price player get from selling car (1-100)
-Config.RebuyPercentage  = 15  --Percent of original car price player need to buy back the car (1-100)
-Config.NpcCarPrice      = 100 --Set the sell price for npc car (1-100000000.....)
-Config.PawnShopBLJob    = {	  --Here you can add job can't sell car at PawnShop
+Config.SellCarBlackMoney = false --Set this to true if you want player recive blackmoney instead of money (true-false)
+Config.ResellPercentage  = 10    --Percent of original car price player get from selling car (1-100)
+Config.RebuyPercentage   = 15    --Percent of original car price player need to buy back the car (1-100)
+Config.NpcCarPrice       = 100   --Set the sell price for npc car (1-100000000.....)
+Config.PawnShopBLJob     = {	 --Here you can add job can't sell car at PawnShop
 	{ JobName  = "police", },
 	{ JobName  = "mecano", },
 	{ JobName  = "ambulance", }
