@@ -6,6 +6,7 @@ CREATE TABLE `pawnshop_vehicles` (
 	`plate` varchar(12) NOT NULL,
 	`vehicle` longtext,
 	`price` int(15) NOT NULL,
+	`expiration` int(15) NOT NULL,
 
 	PRIMARY KEY (`plate`)
 );

@@ -395,7 +395,7 @@ function OpenPawnshopMenu3()
 			      VehPrice     = math.floor(vehicle.price / Config.ResellPercentage * Config.RebuyPercentage)
     		local labelvehicle = (VehicleName .." ".. VehPrice .."$")
 
-			table.insert(elements, {label =labelvehicle, value = vehicle})
+			table.insert(elements, {label = labelvehicle, value = vehicle})
 			
 		end
 
@@ -410,7 +410,7 @@ function OpenPawnshopMenu3()
 			if (data.current.value) then
 				menu.close()
 				local veh = data.current.value
-				TriggerServerEvent('esx_ownedcarthief:VehBuy', veh, VehPrice)
+				TriggerServerEvent('esx_ownedcarthief:VehBuy', veh)
 			end
 		end, function(data, menu)
 			ESX.UI.Menu.CloseAll()
