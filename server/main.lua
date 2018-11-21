@@ -4,16 +4,24 @@ TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 local vehicles = nil
 
 ESX.RegisterServerCallback('esx_ownedcarthief:GetVehPrice', function (source, cb, plate)
+local _source  = source
 local vehiclefound = false
 local _model       = model
-	if vehicles == nil then
-		vehicles = MySQL.Sync.fetchAll('SELECT * FROM vehicles')
-	end
-		MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
-			['@plate'] = plate
-		}, function (result)
-			cb(result[1] ~= nil, vehicles)
-		end)
+	howmanycops(function(cops)
+		if cops >= Config.PoliceNumberRequired then
+			if vehicles == nil then
+				vehicles = MySQL.Sync.fetchAll('SELECT * FROM vehicles')
+			end
+			MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
+				['@plate'] = plate
+			}, function (result)
+				cb(result[1] ~= nil, vehicles)
+			end)
+		else
+			TriggerClientEvent('esx:showNotification', _source, _U('no_cops'))
+		end
+	end)
+
 end)
 
 RegisterServerEvent('esx_ownedcarthief:VehBuy')
@@ -123,8 +131,7 @@ AddEventHandler('esx_ownedcarthief:alarmgps', function(status, txt, gx, gy, gz)
 	end
 end)
 
-RegisterServerEvent('esx_ownedcarthief:howmanycops')
-AddEventHandler('esx_ownedcarthief:howmanycops', function()
+function howmanycops(cb)
 	local xPlayers = ESX.GetPlayers()
 	local cops = 0
 	for i=1, #xPlayers, 1 do
@@ -133,8 +140,8 @@ AddEventHandler('esx_ownedcarthief:howmanycops', function()
 			cops = cops + 1
 		end
 	end
-	TriggerClientEvent('esx_ownedcarthief:howmanycops2', source, cops)
-end)
+	cb(cops)
+end
 
 ESX.RegisterServerCallback('esx_ownedcarthief:isPlateTaken', function (source, cb, plate)
     MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
@@ -231,19 +238,32 @@ end)
 
 ESX.RegisterUsableItem('hammerwirecutter', function(source) --Hammer high time to unlock but 100% call cops and alarm start
     local _source = source
-	TriggerClientEvent('esx_ownedcarthief:stealcar', _source, "hammerwirecutter")
+	howmanycops(function(cops)
+		if cops >= Config.PoliceNumberRequired then
+			TriggerClientEvent('esx_ownedcarthief:stealcar', _source, "hammerwirecutter")
+		else
+			TriggerClientEvent('esx:showNotification', _source, _U('no_cops'))
+		end
+	end)
 end)
 
 ESX.RegisterUsableItem('unlockingtool', function(source) --unlockingtool Medium time to unlock and low chance to call cops
     local _source = source
-	TriggerClientEvent('esx_ownedcarthief:stealcar', _source, "unlockingtool")
+		howmanycops(function(cops)
+		if cops >= Config.PoliceNumberRequired then
+			TriggerClientEvent('esx_ownedcarthief:stealcar', _source, "unlockingtool")
+		else
+			TriggerClientEvent('esx:showNotification', _source, _U('no_cops'))
+		end
+	end)
+	
 end)
 
 ESX.RegisterUsableItem('jammer', function(source) --GPS Jammer cut the signal of call cops
     local _source  = source
     local xPlayer  = ESX.GetPlayerFromId(_source)
 	local xPlayers = ESX.GetPlayers()
-	
+
 	Citizen.Wait(3000)
 		for i=1, #xPlayers, 1 do
 		local xPlayer = ESX.GetPlayerFromId(xPlayers[i])

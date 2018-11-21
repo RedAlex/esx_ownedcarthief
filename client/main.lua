@@ -14,7 +14,6 @@ ESX              = nil
 local PlayerData = {}
 local seconde    = 1000
 local vehicle    = nil
-local cops       = 0
 local callcops   = 0
 local carblips   = {}
 local timer      = 0
@@ -72,11 +71,6 @@ local playerPed = PlayerPedId()
 	end
 end)
 
-RegisterNetEvent('esx_ownedcarthief:howmanycops2')
-AddEventHandler('esx_ownedcarthief:howmanycops2', function(data)
-  cops = data
-end)
-
 RegisterNetEvent('esx_ownedcarthief:911')
 AddEventHandler('esx_ownedcarthief:911', function(gx, gy, gz, blipt)
 local XBlipTime = blipt
@@ -126,7 +120,6 @@ local CheckOwnedPlate = false
 local itemused        = item
 	  vehplate        = vehicleData.plate
 
-	TriggerServerEvent('esx_ownedcarthief:howmanycops')
 	ESX.UI.Menu.CloseAll()
 	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 3.0) and vehicleData ~= nil then
 		ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken, alarmsystem)
