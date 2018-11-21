@@ -38,4 +38,5 @@ Locales['fr'] = {
   ['vehicle_sold']        = 'Véhicule ~g~vendu~s~ pour ~g~$%s~s~',
   ['vehicle_unlocked']    = 'véhicule ~g~Déverrouillé~s~',
   ['warning']             = '~r~Vous avez quitte le Pawn Shop',
+  ['we_r_busy']           = '~r~Désolé~s~ , mais on est déja occuper sur un autre véhicule, repasser plus tard.',
 }

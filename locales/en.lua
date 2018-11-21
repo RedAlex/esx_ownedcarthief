@@ -38,4 +38,5 @@ Locales['en'] = {
   ['vehicle_sold']        = 'the vehicle has been ~g~sold~s~ for ~g~$%s~s~',
   ['vehicle_unlocked']    = 'Vehicle ~g~Unlocked~s~',
   ['warning']             = '~r~You left the Pawn Shop',
+  ['we_r_busy']           = '~r~Sorry~s~ , but we\'re already busy on another vehicle, going back later.',
 }

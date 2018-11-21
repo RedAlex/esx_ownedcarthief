@@ -38,4 +38,5 @@ Locales['br'] = {
   ['vehicle_sold']        = 'pojazd został ~g~sprzedany~s~ for ~g~$%s~s~',
   ['vehicle_unlocked']    = 'Veículo ~g~destrancado~s~',
   ['warning']             = '~r~Você se distanciou do receptador',
+  ['we_r_busy']           = '~r~Desculpe~s~ , mas estamos ocupados com outro veículo, volte mais tarde.',
 }

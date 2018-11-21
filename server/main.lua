@@ -2,25 +2,31 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 local vehicles = nil
+local WaitTime = 0
+local minutes  = 60000
 
 ESX.RegisterServerCallback('esx_ownedcarthief:GetVehPrice', function (source, cb, plate)
 local _source  = source
 local vehiclefound = false
 local _model       = model
-	howmanycops(function(cops)
-		if cops >= Config.PoliceNumberRequired then
-			if vehicles == nil then
-				vehicles = MySQL.Sync.fetchAll('SELECT * FROM vehicles')
+	if WaitTime == 0 then
+		howmanycops(function(cops)
+			if cops >= Config.PoliceNumberRequired then
+				if vehicles == nil then
+					vehicles = MySQL.Sync.fetchAll('SELECT * FROM vehicles')
+				end
+				MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
+					['@plate'] = plate
+				}, function (result)
+					cb(result[1] ~= nil, vehicles)
+				end)
+			else
+				TriggerClientEvent('esx:showNotification', _source, _U('no_cops'))
 			end
-			MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
-				['@plate'] = plate
-			}, function (result)
-				cb(result[1] ~= nil, vehicles)
-			end)
-		else
-			TriggerClientEvent('esx:showNotification', _source, _U('no_cops'))
-		end
-	end)
+		end)
+	else
+		TriggerClientEvent('esx:showNotification', _source, _U('we_r_busy'))
+	end
 
 end)
 
@@ -60,6 +66,7 @@ local vehicle = {}
 	else
 		xPlayer.addMoney(price)
 	end
+	WaitTime = (Config.WaitTime * minutes)
 	TriggerClientEvent('esx:showNotification', _source, _U('vehicle_sold', price))
 	if owned then
 		MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', 
@@ -340,4 +347,14 @@ AddEventHandler('esx_ownedcarthief:itemused', function(item)
 	local itemused = item
 	local xPlayer  = ESX.GetPlayerFromId(_source)
 	xPlayer.removeInventoryItem(itemused, 1)
+end)
+
+CreateThread(function()
+	while true do
+		Wait(1 * minutes)
+		if WaitTime > 0 then
+			WaitTime = WaitTime - minutes
+		end
+	end
+
 end)

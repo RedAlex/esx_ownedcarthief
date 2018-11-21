@@ -13,9 +13,10 @@ Config.BlipTime             = 40   --Set how many time a blip keep flash on map.
 
 -- PAWNSHOP SETTING
 Config.SellCarBlackMoney = false --Set this to true if you want player recive blackmoney instead of money (true-false)
+Config.WaitTime          = 5     --Set how many time in minutes before another vehicle can be sell to the pawnshop (0-9999...)
 Config.ResellPercentage  = 10    --Percent of original car price player get from selling car (1-100)
 Config.RebuyPercentage   = 15    --Percent of original car price player need to buy back the car (1-100)
-Config.NpcCarPrice       = 100   --Set the sell price for npc car (1-100000000.....)
+Config.NpcCarPrice       = 100   --Set the sell price for npc car (1-9999...)
 Config.PawnShopBLJob     = {	 --Here you can add job can't sell car at PawnShop
 	{ JobName  = "police", },
 	{ JobName  = "mecano", },

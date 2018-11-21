@@ -1,4 +1,4 @@
-# esx_ownedcarthief Beta 14
+# esx_ownedcarthief
 
 Allows stolen & sold vehicles owned by other players.
 Player need to contact a mecano to install one of the 3 alarm system on ther car.
@@ -50,7 +50,7 @@ This system sends the vehicle's position in REAL-TIME to the policeman in case o
 - Translation PT/BR - iKaoticx https://github.com/iKaoticx
 - Code based on the resources of https://github.com/ESX-Org
 ___
-# esx_ownedcarthief Beta 14
+# esx_ownedcarthief
 
 Permet de volé et de vendre les véhicules posseder par d'autre joueurs.
 Le joueur doit contacter un mécano pour installer l’un des 3 systèmes d’alarme sur la voiture.
@@ -103,7 +103,7 @@ Ce system envoie la position du véhicule EN TEMPS RÉEL au policier en cas de d
 - Traduction PT/BR - iKaoticx https://github.com/iKaoticx
 - Code basé sur les ressource de https://github.com/ESX-Org
 ___
-# esx_ownedcarthief Beta 14
+# esx_ownedcarthief
 
 Permite roubar veículo de propiedade de outros jogadores.
 O jogador precisa entrar em contato com um mecânico para instalar um dos 3 sistemas de alarme no carro.
