@@ -227,7 +227,6 @@ AddEventHandler('esx_ownedcarthief:buyitem', function(item)
   local _source   = source
   local xPlayer   = ESX.GetPlayerFromId(_source)
   local limit     = xPlayer.getInventoryItem(_item).limit
-  local delta     = 1
   local qtty      = xPlayer.getInventoryItem(_item).count
   local pricelist = Config.Prices
   local itemprice = nil
@@ -238,14 +237,10 @@ AddEventHandler('esx_ownedcarthief:buyitem', function(item)
 			itemprice = itemname.price
 		end
 	end
-	
-	if limit ~= -1 then
-		delta = limit - qtty
-	end
 
 	if qtty < limit and xPlayer.getMoney() >= itemprice then
 		xPlayer.removeMoney(itemprice)
-		xPlayer.addInventoryItem(_item, delta)
+		xPlayer.addInventoryItem(_item, 1)
 	else
 		TriggerClientEvent('esx:showNotification', _source, _U('max_item'))
 	end

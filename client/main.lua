@@ -22,6 +22,7 @@ local vehunlock  = false
 local vehplate   = nil
 local alarm      = false
 local SystemType = 0
+local SellWait   = false
 
 Citizen.CreateThread(function()
 	while ESX == nil do
@@ -266,6 +267,8 @@ function OpenPawnshopMenu()
 	ESX.UI.Menu.CloseAll()
 
 	local cantsellcar = false
+	local playerPed   = PlayerPedId()
+	local veh         = GetVehiclePedIsIn(playerPed, false)
 	      PlayerData  = ESX.GetPlayerData()
 
 	for i=1, #Config.PawnShopBLJob, 1 do
@@ -281,7 +284,7 @@ function OpenPawnshopMenu()
 
 	}
 
-	if not cantsellcar then
+	if not cantsellcar and GetPedInVehicleSeat(veh, -1) == playerPed then
 		table.insert(menuelements, {label = _U('pawnshop_resell'),  value = 'pawnshop_resell'})
 	end
 
@@ -315,7 +318,8 @@ local playerPed   = PlayerPedId()
 local veh         = GetVehiclePedIsIn(playerPed, false)
 local vehicleData = ESX.Game.GetVehicleProperties(veh)
 
-	if GetPedInVehicleSeat(veh, -1) == playerPed then
+	if GetPedInVehicleSeat(veh, -1) == playerPed and not SellWait then
+		SellWait = true
 		ESX.TriggerServerCallback('esx_ownedcarthief:GetVehPrice', function (ownedcar, vehicles)
 			ESX.ShowNotification(_U('checkvehicle'))
 			Citizen.CreateThread(function()
@@ -328,6 +332,7 @@ local vehicleData = ESX.Game.GetVehicleProperties(veh)
 							price = math.floor(vehicle.price / 100 * Config.ResellPercentage) 
 							ESX.Game.DeleteVehicle(veh)
 							TriggerServerEvent('esx_ownedcarthief:VehSold', true, price, vehicleData.plate)
+							SellWait = false
 							break
 						end
 					end
@@ -335,8 +340,10 @@ local vehicleData = ESX.Game.GetVehicleProperties(veh)
 					price = Config.NpcCarPrice
 					ESX.Game.DeleteVehicle(veh)
 					TriggerServerEvent('esx_ownedcarthief:VehSold', false, price, vehicleData.plate)
+					SellWait = false
 				elseif Config.OnlyPlayerCar and not ownedcar then
 					ESX.ShowNotification(_U('not_work_with_npc'))
+					SellWait = false
 				end
 
 			end)
@@ -376,7 +383,6 @@ function OpenPawnshopMenu2()
 			end
 		end
 	end, function(data, menu)
-		ESX.UI.Menu.CloseAll()
 	end
 	)
 end
@@ -516,10 +522,6 @@ function removeBlip(data)
 		RemoveBlip(existingBlip)
 	end
 end
-
-RegisterCommand("test", function(source, args, rawCommand) --TEST ZONE
-
-end, false) -- set this to false to allow anyone.
 
 Citizen.CreateThread(function()
 local zone = Config.Zones
