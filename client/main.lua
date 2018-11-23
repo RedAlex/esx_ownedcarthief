@@ -375,7 +375,6 @@ function OpenPawnshopMenu2()
 		align    = 'left',
 		elements = menuelements,
 	}, function(data, menu)
-		menu.close()
 	  	local zone = Config.Zones
 		for i=1, #zone, 1 do
 			if (isNear(zone[i].Pos)) then
@@ -383,6 +382,7 @@ function OpenPawnshopMenu2()
 			end
 		end
 	end, function(data, menu)
+		ESX.UI.Menu.CloseAll()
 	end
 	)
 end
