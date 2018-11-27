@@ -492,6 +492,7 @@ Citizen.CreateThread(function()
 				SetVehicleAlarm(vehicle, 1)
 				StartVehicleAlarm(vehicle)
 				vehunlock = false
+				alarm     = true
 			elseif not vehunlock and vehicle ~= nil and alarm and vehplate == vehicleData.plate then
 				alarmtime = (alarmtime + 2)
 				if alarmtime >= 10 then
