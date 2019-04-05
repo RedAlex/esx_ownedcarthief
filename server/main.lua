@@ -311,7 +311,7 @@ ESX.RegisterUsableItem('alarm1', function(source)
 	local _source  = source
 	local xPlayers = ESX.GetPlayers()
 	local xPlayer  = ESX.GetPlayerFromId(_source)
-	if xPlayer.job.name == 'mecano' then
+	if xPlayer.job.name == 'mechanic' then
 		TriggerClientEvent('esx_ownedcarthief:useitemalarm', _source, 1)
 	else
 		TriggerClientEvent('esx:showNotification', _source, _U('not_mecano'))
@@ -322,7 +322,7 @@ ESX.RegisterUsableItem('alarm2', function(source)
 	local _source  = source
 	local xPlayers = ESX.GetPlayers()
 	local xPlayer  = ESX.GetPlayerFromId(_source)
-	if xPlayer.job.name == 'mecano' then
+	if xPlayer.job.name == 'mechanic' then
 		TriggerClientEvent('esx_ownedcarthief:useitemalarm', _source, 2)
 	else
 		TriggerClientEvent('esx:showNotification', _source, _U('not_mecano'))
@@ -333,7 +333,7 @@ ESX.RegisterUsableItem('alarm3', function(source)
 	local _source  = source
 	local xPlayers = ESX.GetPlayers()
 	local xPlayer  = ESX.GetPlayerFromId(_source)
-	if xPlayer.job.name == 'mecano' then
+	if xPlayer.job.name == 'mechanic' then
 		TriggerClientEvent('esx_ownedcarthief:useitemalarm', _source, 3)
 	else
 		TriggerClientEvent('esx:showNotification', _source, _U('not_mecano'))

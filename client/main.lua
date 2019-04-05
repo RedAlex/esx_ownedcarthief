@@ -363,7 +363,7 @@ function OpenPawnshopMenu2()
 	if PlayerData.job.name == 'police' then
 		table.insert(menuelements, {label = _U('alarminterface', Config.Prices[7].price),  value = 'alarminterface'})
 	end
-	if PlayerData.job.name == 'mecano' then
+	if PlayerData.job.name == 'mechanic' then
 		table.insert(menuelements, {label = _U('alarm1', Config.Prices[4].price),  value = 'alarm1'})
 		table.insert(menuelements, {label = _U('alarm2', Config.Prices[5].price),  value = 'alarm2'})
 		table.insert(menuelements, {label = _U('alarm3', Config.Prices[6].price),  value = 'alarm3'})
