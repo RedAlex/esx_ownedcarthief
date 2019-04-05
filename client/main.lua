@@ -331,7 +331,7 @@ function OpenBlackGarageMenu()
 				menu.close()
 				local zone = Config.Zones
 				for i=1, #zone, 1 do
-					if (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_resell' then
+					if (isNear(zone[i].Pos)) and data.current.value == 'blackgarage_resell' then
 						SellStolenCar()
 					end
 				end
