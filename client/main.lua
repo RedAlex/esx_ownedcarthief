@@ -72,6 +72,11 @@ local playerPed = PlayerPedId()
 	end
 end)
 
+RegisterNetEvent('esx:setJob')
+AddEventHandler('esx:setJob', function(job)
+	PlayerData.job = job
+end)
+
 RegisterNetEvent('esx_ownedcarthief:911')
 AddEventHandler('esx_ownedcarthief:911', function(gx, gy, gz, blipt)
 local XBlipTime = blipt
@@ -269,7 +274,6 @@ function OpenPawnshopMenu()
 	local cantsellcar = false
 	local playerPed   = PlayerPedId()
 	local veh         = GetVehiclePedIsIn(playerPed, false)
-	      PlayerData  = ESX.GetPlayerData()
 
 	for i=1, #Config.PawnShopBLJob, 1 do
 		local BLJob = Config.PawnShopBLJob[i]
@@ -352,7 +356,6 @@ local vehicleData = ESX.Game.GetVehicleProperties(veh)
 end
 
 function OpenPawnshopMenu2()
-	PlayerData = ESX.GetPlayerData()
 	ESX.UI.Menu.CloseAll()
 
 	local elements = {}

@@ -6,7 +6,7 @@ Config.OnlyPlayerCar = true --Set false if you want to picklock work on npc car 
 Config.Locale        = 'fr' --Set lang (fr-en-br)
 
 -- POLICE
-Config.PoliceNumberRequired = 0    --Set how many cops is need to try stole a car. (0-32)
+Config.PoliceNumberRequired = 0    --Set how many cops is need to try stole a car. (0-64)
 Config.AlertPolice          = true --Turn to false if you don't want cops is called on car alarm start for player car. (true-false)
 Config.CallCopsChance       = 60   --How many % of chance for the car alarm start AND call cops. (0-100)
 Config.BlipTime             = 40   --Set how many time a blip keep flash on map. (1-200)
@@ -22,6 +22,17 @@ Config.PawnShopBLJob     = {	 --Here you can add job can't sell car at PawnShop
 	{ JobName  = "police", },
 	{ JobName  = "mecano", },
 	{ JobName  = "ambulance", }
+}
+
+--ITEMS PRICES
+Config.Prices = {
+  {name = "hammerwirecutter", price = 100},
+  {name = "unlockingtool",    price = 1000},
+  {name = "jammer",           price = 10000},
+  {name = "alarm1",           price = 10000},
+  {name = "alarm2",           price = 20000},
+  {name = "alarm3",           price = 30000},
+  {name = "alarminterface",   price = 100}
 }
 
 --SHOPS ZONES
@@ -48,15 +59,4 @@ Config.Zones = {
     Color = {r = 204, g = 204, b = 0},
     Type  = 1
   }
-}
-
---ITEMS PRICES
-Config.Prices = {
-  {name = "hammerwirecutter", price = 100,},
-  {name = "unlockingtool",    price = 1000,},
-  {name = "jammer",           price = 10000,},
-  {name = "alarm1",           price = 10000,},
-  {name = "alarm2",           price = 20000,},
-  {name = "alarm3",           price = 30000,},
-  {name = "alarminterface",   price = 100}
 }
