@@ -355,25 +355,30 @@ function OpenPawnshopMenu2()
 	PlayerData = ESX.GetPlayerData()
 	ESX.UI.Menu.CloseAll()
 
-	local menuelements = {
-			{label = _U('hammerwirecutter', Config.Prices[1].price),  value = 'hammerwirecutter'},
-			{label = _U('jammer', Config.Prices[3].price),  value = 'jammer'},
-			{label = _U('unlockingtool', Config.Prices[2].price),  value = 'unlockingtool'}
+	local elements = {}
+	if PlayerData.job.name ~= 'police' then
+		elements = {
+			{label = _U('hammerwirecutter', Config.Prices[1].price), value = 'hammerwirecutter'},
+			{label = _U('jammer', Config.Prices[3].price), value = 'jammer'},
+			{label = _U('unlockingtool', Config.Prices[2].price), value = 'unlockingtool'}
 		}
+	end
 	if PlayerData.job.name == 'police' then
-		table.insert(menuelements, {label = _U('alarminterface', Config.Prices[7].price),  value = 'alarminterface'})
+		elements = {
+			{label = _U('alarminterface', Config.Prices[7].price),  value = 'alarminterface'}
+		}
 	end
 	if PlayerData.job.name == 'mechanic' then
-		table.insert(menuelements, {label = _U('alarm1', Config.Prices[4].price),  value = 'alarm1'})
-		table.insert(menuelements, {label = _U('alarm2', Config.Prices[5].price),  value = 'alarm2'})
-		table.insert(menuelements, {label = _U('alarm3', Config.Prices[6].price),  value = 'alarm3'})
+		table.insert(elements, {label = _U('alarm1', Config.Prices[4].price), value = 'alarm1'})
+		table.insert(elements, {label = _U('alarm2', Config.Prices[5].price), value = 'alarm2'})
+		table.insert(elements, {label = _U('alarm3', Config.Prices[6].price), value = 'alarm3'})
 	end
 	ESX.UI.Menu.Open(
 	'default', GetCurrentResourceName(), 'pawnshop2',
 	{
 		title    = _U('pawnshop_menu_title'),
 		align    = 'left',
-		elements = menuelements,
+		elements = elements,
 	}, function(data, menu)
 	  	local zone = Config.Zones
 		for i=1, #zone, 1 do
