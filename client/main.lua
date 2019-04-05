@@ -275,22 +275,11 @@ function OpenPawnshopMenu()
 	local playerPed   = PlayerPedId()
 	local veh         = GetVehiclePedIsIn(playerPed, false)
 
-	for i=1, #Config.PawnShopBLJob, 1 do
-		local BLJob = Config.PawnShopBLJob[i]
-		if PlayerData.job.name == BLJob.JobName then
-			cantsellcar = true
-		end
-	end
-
 	local menuelements = {
 		{label = _U('pawnshop_buyitem'), value = 'pawnshop_buyitem'},
 		{label = _U('pawnshop_rebuy'),   value = 'pawnshop_rebuy'}
 
 	}
-
-	if not cantsellcar and GetPedInVehicleSeat(veh, -1) == playerPed then
-		table.insert(menuelements, {label = _U('pawnshop_resell'),  value = 'pawnshop_resell'})
-	end
 
 	ESX.UI.Menu.Open(
 	'default', GetCurrentResourceName(), 'pawnshop',
@@ -302,9 +291,7 @@ function OpenPawnshopMenu()
 			menu.close()
 			local zone = Config.Zones
 			for i=1, #zone, 1 do
-				if (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_resell' then
-					SellStolenCar()
-				elseif (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_rebuy' then
+				if (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_rebuy' then
 					OpenPawnshopMenu3()
 				elseif (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_buyitem' then
 					OpenPawnshopMenu2()
@@ -315,6 +302,43 @@ function OpenPawnshopMenu()
 	 end
 	
 	)
+end
+
+function OpenBlackGarageMenu()
+	ESX.UI.Menu.CloseAll()
+
+	local cantsellcar = false
+	local playerPed   = PlayerPedId()
+	local veh         = GetVehiclePedIsIn(playerPed, false)
+
+	for i=1, #Config.PawnShopBLJob, 1 do
+		local BLJob = Config.PawnShopBLJob[i]
+		if PlayerData.job.name == BLJob.JobName then
+			cantsellcar = true
+		end
+	end
+	
+	if not cantsellcar and GetPedInVehicleSeat(veh, -1) == playerPed then
+		local menuelements = {{label = _U('pawnshop_resell'),  value = 'pawnshop_resell'}}
+
+		ESX.UI.Menu.Open(
+		'default', GetCurrentResourceName(), 'blackgarage',
+		{
+			title    = _U('black_menu_title'),
+			align    = 'left',
+			elements = menuelements,
+		}, function(data, menu)
+				menu.close()
+				local zone = Config.Zones
+				for i=1, #zone, 1 do
+					if (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_resell' then
+						SellStolenCar()
+					end
+				end
+		end, function(data, menu)
+			menu.close()
+		 end)
+	end
 end
 
 function SellStolenCar()
@@ -535,19 +559,19 @@ end
 Citizen.CreateThread(function()
 local zone = Config.Zones
 	for i=1, #zone, 1 do
-		local blip = AddBlipForCoord(zone[i].Pos.x, zone[i].Pos.y, zone[i].z)
-		SetBlipSprite (blip, 488)
-		SetBlipDisplay(blip, 4)
-		SetBlipColour (blip, 1)
-		SetBlipScale  (blip, 1.2)
-		SetBlipAsShortRange(blip, true)
+		if zone[i].OnMap then
+			local blip = AddBlipForCoord(zone[i].Pos.x, zone[i].Pos.y, zone[i].z)
+			SetBlipSprite (blip, 488)
+			SetBlipDisplay(blip, 4)
+			SetBlipColour (blip, 1)
+			SetBlipScale  (blip, 1.2)
+			SetBlipAsShortRange(blip, true)
 
-		BeginTextCommandSetBlipName("STRING")
-		AddTextComponentString(_U('pawn_shop_blip'))
-		EndTextCommandSetBlipName(blip)
-		
+			BeginTextCommandSetBlipName("STRING")
+			AddTextComponentString(_U('pawn_shop_blip'))
+			EndTextCommandSetBlipName(blip)
+		end
 	end
-
 		while true do
 		Citizen.Wait(0)
 			for i=1, #zone, 1 do
@@ -557,12 +581,16 @@ local zone = Config.Zones
 				if(isNear(zone[i].Pos)) and (zone[i].Name) == "PawnShop" then
 					Info(_U('pawn_shop_menu'))
 					if(IsControlJustPressed(1, 38)) then
-					OpenPawnshopMenu()
+						OpenPawnshopMenu()
+					end
+				elseif(isNear(zone[i].Pos)) and (zone[i].Name) == "BlackGarage" then
+					Info(_U('black_garage_menu'))
+					if(IsControlJustPressed(1, 38)) then
+						OpenBlackGarageMenu()
 					end
 				end
 			end
 			
 		end
-
 end)
 
