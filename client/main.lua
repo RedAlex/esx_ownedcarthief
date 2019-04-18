@@ -319,7 +319,7 @@ function OpenBlackGarageMenu()
 	end
 	
 	if not cantsellcar and GetPedInVehicleSeat(veh, -1) == playerPed then
-		local menuelements = {{label = _U('pawnshop_resell'),  value = 'pawnshop_resell'}}
+		local menuelements = {{label = _U('blackgarage_resell'),  value = 'blackgarage_resell'}}
 
 		ESX.UI.Menu.Open(
 		'default', GetCurrentResourceName(), 'blackgarage',
