@@ -1,3 +1,5 @@
+USE `essentialmode`;
+
 ALTER TABLE `owned_vehicles` ADD `security` int(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system state' AFTER `owner`;
 
 CREATE TABLE `pawnshop_vehicles` (
@@ -9,7 +11,7 @@ CREATE TABLE `pawnshop_vehicles` (
 	`expiration` int(15) NOT NULL,
 
 	PRIMARY KEY (`plate`)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `items` (name, label, `limit`) VALUES
 	('hammerwirecutter', 'Marteau & coupe fil', 1),
