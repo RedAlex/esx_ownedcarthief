@@ -20,7 +20,7 @@ Config.RebuyPercentage   = 15    --Percent of original car price player need to 
 Config.NpcCarPrice       = 100   --Set the sell price for npc car (1-9999...)
 Config.PawnShopBLJob     = {	 --Here you can add job can't sell car at PawnShop
 	{ JobName  = "police", },
-	{ JobName  = "mecano", },
+	{ JobName  = "mechanic", },	--new name of job esx_org/esx_mecahnicjob!
 	{ JobName  = "ambulance", }
 }
 
