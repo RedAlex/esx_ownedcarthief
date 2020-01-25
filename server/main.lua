@@ -238,9 +238,13 @@ AddEventHandler('esx_ownedcarthief:buyitem', function(item)
 		end
 	end
 
-	if qtty < limit and xPlayer.getMoney() >= itemprice then
-		xPlayer.removeMoney(itemprice)
-		xPlayer.addInventoryItem(_item, 1)
+	if qtty < limit then
+		if xPlayer.getMoney() >= itemprice then
+			xPlayer.removeMoney(itemprice)
+			xPlayer.addInventoryItem(_item, 1)
+		else
+			TriggerClientEvent('esx:showNotification', _source, _U('not_enough_money'))
+		end
 	else
 		TriggerClientEvent('esx:showNotification', _source, _U('max_item'))
 	end
