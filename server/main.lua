@@ -174,46 +174,18 @@ RegisterServerEvent('esx_ownedcarthief:installalarm')
 AddEventHandler('esx_ownedcarthief:installalarm', function(plate, alarmtype)
 	local _source = source
 	local xPlayer = ESX.GetPlayerFromId(_source)
-    MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE @plate = plate', {
+    MySQL.Async.fetchScalar('SELECT security FROM owned_vehicles WHERE @plate = plate', {
         ['@plate'] = plate
     }, function (result)
-		if result[1] ~= nil then
-			if result[1].security == 3 then
+		if result ~= nil then
+			if result == 3 then
 				TriggerClientEvent('esx:showNotification', _source, _U('alarm_max_lvl'))
-			elseif result[1].security == 2 then
-				if alarmtype == 3 then
-					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
-					xPlayer.removeInventoryItem('alarm3', 1)
-					TriggerClientEvent('esx:showNotification', _source, _U('alarm3_install'))
-				elseif alarmtype == 2 or alarmtype == 1 then
+			elseif alarmtype <= result then
 					TriggerClientEvent('esx:showNotification', _source, _U('alarm_not_install'))
-				end
-			elseif result[1].security == 1 then
-				if alarmtype == 3 then
+			else
 					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
-					xPlayer.removeInventoryItem('alarm3', 1)
-					TriggerClientEvent('esx:showNotification', _source, _U('alarm3_install'))
-				elseif alarmtype == 2 then
-					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
-					xPlayer.removeInventoryItem('alarm2', 1)
-					TriggerClientEvent('esx:showNotification', _source, _U('alarm2_install'))
-				elseif alarmtype == 1 then
-					TriggerClientEvent('esx:showNotification', _source, _U('alarm_not_install'))
-				end
-			elseif result[1].security == 0 then
-				if alarmtype == 3 then
-					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
-					xPlayer.removeInventoryItem('alarm3', 1)
-					TriggerClientEvent('esx:showNotification', _source, _U('alarm3_install'))
-				elseif alarmtype == 2 then
-					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
-					xPlayer.removeInventoryItem('alarm2', 1)
-					TriggerClientEvent('esx:showNotification', _source, _U('alarm2_install'))
-				elseif alarmtype == 1 then
-					MySQL.Sync.execute("UPDATE owned_vehicles SET security=@alarmtype WHERE plate=@plate",{['@alarmtype'] = alarmtype, ['@plate'] = plate})
-					xPlayer.removeInventoryItem('alarm1', 1)
-					TriggerClientEvent('esx:showNotification', _source, _U('alarm1_install'))
-				end
+					xPlayer.removeInventoryItem('alarm'..tostring(alarmtype), 1)
+					TriggerClientEvent('esx:showNotification', _source, _U('alarm'..tostring(alarmtype)..'_install'))
 			end
 		else
 			TriggerClientEvent('esx:showNotification', _source, _U('not_work_with_npc'))
