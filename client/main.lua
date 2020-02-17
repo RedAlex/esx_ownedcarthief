@@ -1,28 +1,10 @@
-local Keys = {
-  ["ESC"] = 322, ["F1"] = 288, ["F2"] = 289, ["F3"] = 170, ["F5"] = 166, ["F6"] = 167, ["F7"] = 168, ["F8"] = 169, ["F9"] = 56, ["F10"] = 57,
-  ["~"] = 243, ["1"] = 157, ["2"] = 158, ["3"] = 160, ["4"] = 164, ["5"] = 165, ["6"] = 159, ["7"] = 161, ["8"] = 162, ["9"] = 163, ["-"] = 84, ["="] = 83, ["BACKSPACE"] = 177,
-  ["TAB"] = 37, ["Q"] = 44, ["W"] = 32, ["E"] = 38, ["R"] = 45, ["T"] = 245, ["Y"] = 246, ["U"] = 303, ["P"] = 199, ["["] = 39, ["]"] = 40, ["ENTER"] = 18,
-  ["CAPS"] = 137, ["A"] = 34, ["S"] = 8, ["D"] = 9, ["F"] = 23, ["G"] = 47, ["H"] = 74, ["K"] = 311, ["L"] = 182,
-  ["LEFTSHIFT"] = 21, ["Z"] = 20, ["X"] = 73, ["C"] = 26, ["V"] = 0, ["B"] = 29, ["N"] = 249, ["M"] = 244, [","] = 82, ["."] = 81,
-  ["LEFTCTRL"] = 36, ["LEFTALT"] = 19, ["SPACE"] = 22, ["RIGHTCTRL"] = 70,
-  ["HOME"] = 213, ["PAGEUP"] = 10, ["PAGEDOWN"] = 11, ["DELETE"] = 178,
-  ["LEFT"] = 174, ["RIGHT"] = 175, ["TOP"] = 27, ["DOWN"] = 173,
-  ["NENTER"] = 201, ["N4"] = 108, ["N5"] = 60, ["N6"] = 107, ["N+"] = 96, ["N-"] = 97, ["N7"] = 117, ["N8"] = 61, ["N9"] = 118
-}
-
-ESX              = nil
-local PlayerData = {}
-local seconde    = 1000
-local vehicle    = nil
-local callcops   = 0
-local carblips   = {}
-local timer      = 0
-local stolecheck = false
-local vehunlock  = false
-local vehplate   = nil
-local alarm      = false
-local SystemType = 0
-local SellWait   = false
+ESX = nil
+local PlayerData, carblips = {}, {}
+local second, callCops, timer, systemType = 1000, 0, 0, 0
+local vehicle, vehPlate = nil, nil
+local alarm, sellWait, step1, stoleCheck, vehUnlock = false, false, false, false, false
+local CurrentAction, CurrentActionMsg, CurrentActionData = nil, '', {}
+local HasAlreadyEnteredMarker, LastZone, LastPart, LastPartNum
 
 Citizen.CreateThread(function()
 	while ESX == nil do
@@ -39,38 +21,213 @@ Citizen.CreateThread(function()
 end)
 
 Citizen.CreateThread(function()
-local playerPed = PlayerPedId()
 	while true do
-
 		Citizen.Wait(5)
-		if stolecheck then
-			local coordx,coordy,coordz = table.unpack(GetEntityCoords(playerPed,true))
-			Citizen.Wait(1 * seconde)
-			local newx,newy,newz = table.unpack(GetEntityCoords(playerPed,true))
+		if stoleCheck then
+			local coordx,coordy,coordz = table.unpack(GetEntityCoords(PlayerPedId(),true))
+			Citizen.Wait(1 * second)
+			local newx,newy,newz = table.unpack(GetEntityCoords(PlayerPedId(),true))
 			if GetDistanceBetweenCoords(coordx,coordy,coordz, newx,newy,newz) > 2 then
-				stolecheck = false
-				timer      = 0
+				stoleCheck = false
+				timer = 0
 			end
 		end
 	end
 end)
 
 Citizen.CreateThread(function()
-local playerPed = PlayerPedId()
+	for k,v in pairs(Config.Zones.Shops) do
+		if v.OnMap then
+			for i = 1, #v.Pos, 1 do
+				local blip = AddBlipForCoord(v.Pos[i])
 
-	while true do
+				SetBlipSprite (blip, v.Sprite)
+				SetBlipScale  (blip, v.Size)
+				SetBlipColour (blip, v.Color)
+				SetBlipAsShortRange(blip, true)
 
-		Citizen.Wait(0)
-		if timer > (20 * seconde) and stolecheck then
-			Citizen.Wait(19 * seconde)
-			if timer > (4 * seconde) and stolecheck then
-				TaskPlayAnim(GetPlayerPed(-1), "gestures@m@standing@casual" ,"gesture_damn" ,8.0, -8.0, -1, 0, 0, false, false, false )
-				Citizen.Wait(3 * seconde)
-				TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
+				BeginTextCommandSetBlipName('STRING')
+				AddTextComponentSubstringPlayerName(_U(v.Name))
+				EndTextCommandSetBlipName(blip)
 			end
 		end
 	end
 end)
+
+Citizen.CreateThread(function()
+	while true do
+		Citizen.Wait(0)
+		local playerCoords = GetEntityCoords(PlayerPedId())
+		local letSleep, isInMarker, hasExited = true, false, false
+		local currentZone, currentPart, currentPartNum
+
+		for zone,shop in pairs(Config.Zones) do
+
+			for k,v in ipairs(shop.PawnShop.Pos) do
+				local distance = #(playerCoords - v)
+
+				if distance < 100.0 then
+					DrawMarker(1, v, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.5, 1.5, 0.5, 102, 0, 102, 100, false, false, 2, false, nil, nil, false)
+					letSleep = false
+
+					if distance < 1.5 then
+						isInMarker, currentZone, currentPart, currentPartNum = true, zone, 'PawnShopActions', k
+					end
+				end
+			end
+			
+			for k,v in ipairs(shop.BlackGarage.Pos) do
+				local distance = #(playerCoords - v)
+
+				if distance < 100.0 then
+					DrawMarker(1, v, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3, 3, 0.5, 102, 0, 102, 100, false, false, 2, false, nil, nil, false)
+					letSleep = false
+
+					if distance < 3 then
+						isInMarker, currentZone, currentPart, currentPartNum = true, zone, 'BlackGarageActions', k
+					end
+				end
+			end
+		end
+
+		if isInMarker and not HasAlreadyEnteredMarker or (isInMarker and (LastZone ~= currentZone or LastPart ~= currentPart or LastPartNum ~= currentPartNum)) then
+			if
+				(LastZone ~= nil and LastPart ~= nil and LastPartNum ~= nil) and
+				(LastZone ~= currentZone or LastPart ~= currentPart or LastPartNum ~= currentPartNum)
+			then
+				TriggerEvent('esx_ownedcarthief:hasExitedMarker', LastZone, LastPart, LastPartNum)
+				hasExited = true
+			end
+
+			HasAlreadyEnteredMarker, LastZone, LastPart, LastPartNum = true, currentZone, currentPart, currentPartNum
+
+			TriggerEvent('esx_ownedcarthief:hasEnteredMarker', currentZone, currentPart, currentPartNum)
+		end
+
+		if not hasExited and not isInMarker and HasAlreadyEnteredMarker then
+			HasAlreadyEnteredMarker = false
+			TriggerEvent('esx_ownedcarthief:hasExitedMarker', LastZone, LastPart, LastPartNum)
+		end
+
+		if letSleep then
+			Citizen.Wait(500)
+		end
+	end
+end)
+
+AddEventHandler('esx_ownedcarthief:hasEnteredMarker', function(hospital, part, partNum)
+	if part == 'PawnShopActions' then
+		OpenPawnshopMenu()
+	elseif part == 'BlackGarageActions' then
+		OpenBlackGarageMenu()
+	end
+end)
+
+AddEventHandler('esx_ownedcarthief:hasExitedMarker', function(hospital, part, partNum)
+	if not isInShopMenu then
+		ESX.UI.Menu.CloseAll()
+	end
+
+	CurrentAction = nil
+end)
+
+Citizen.CreateThread(function()
+	local alarmTime = 0
+	local step2 = false
+
+	while true do
+		Citizen.Wait(1 * second)
+		if systemType == 3 and vehUnlock and GetVehiclePedIsIn(PlayerPedId(), false) ~= 0 then
+			local veh         = GetVehiclePedIsIn(PlayerPedId(), false)
+			local vehicleData = ESX.Game.GetVehicleProperties(veh)
+			local coords      = GetEntityCoords(veh)
+			if step1 and veh ~= nil and vehPlate == vehicleData.plate and GetPedInVehicleSeat(veh, -1) == PlayerPedId() then
+				TriggerServerEvent('esx_ownedcarthief:alarmgps', true, true,coords.x, coords.y, coords.z)
+				SetVehicleAlarm(vehicle, true)
+				StartVehicleAlarm(vehicle)
+				step1, step2, alarm = false, true, true
+			end
+			if step2 and vehicle ~= nil and alarm and vehPlate == vehicleData.plate then
+				alarmTime = (alarmTime + 2)
+				if alarmTime >= 10 then
+					SetVehicleAlarm(vehicle, true)
+					StartVehicleAlarm(vehicle)
+					alarmTime = 0
+				end
+				TriggerServerEvent('esx_ownedcarthief:alarmgps', true, false, coords.x, coords.y, coords.z)
+				Citizen.Wait(1 * second)
+			else
+				Citizen.Wait(1 * second)
+				alarmTime   = 0
+			end
+		elseif systemType == 2 and vehUnlock and GetVehiclePedIsIn(PlayerPedId(), false) ~= 0 then
+			if vehicle ~= nil and alarm and vehPlate == vehicleData.plate then
+				alarmTime = (alarmTime + 2)
+				if alarmTime >= 10 then
+					SetVehicleAlarm(vehicle, true)
+					StartVehicleAlarm(vehicle)
+					alarmTime = 0
+				end
+				Citizen.Wait(1 * second)
+			else
+				Citizen.Wait(1 * second)
+				alarmTime   = 0
+			end
+		end
+		
+	end
+end)
+
+Citizen.CreateThread(function()
+local hornCount = 0
+local warn = false
+local lastvehicle = 0
+
+	while true do
+		Citizen.Wait(1 * second)
+		local veh = GetVehiclePedIsIn(PlayerPedId(), false)
+		if veh ~= 0 and veh ~= lastvehicle then
+			systemType, step1, step2, vehUnlock, warn = 0, false, false, false, false
+			vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+			lastvehicle = vehicle
+			local vehicleData = ESX.Game.GetVehicleProperties(vehicle)
+			vehPlate = vehicleData.plate
+			ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken, canInteract ,alarmSystem, alarmactive)
+				if isPlateTaken then
+					if not canInteract then
+						systemType = alarmSystem
+						warn = alarmactive
+					end
+				end
+			end, vehicleData.plate)
+		end
+		if warn then
+			if hornCount < 9 and warn then
+				StartVehicleHorn(vehicle, 0, "HELDDOWN", false)
+				Citizen.Wait(100)
+				if hornCount >= 3 then
+					StartVehicleHorn(vehicle, 0, "HELDDOWN", false)
+					Citizen.Wait(100)
+					if hornCount >= 6 then
+						StartVehicleHorn(vehicle, 0, "HELDDOWN", false)
+						Citizen.Wait(100)
+					end
+				end
+				hornCount = hornCount + 1
+			elseif hornCount >= 9 and warn then
+				step1, vehUnlock, warn = true, true, false
+				CallCops(100, true, false)
+			end
+		end
+		if hornCount > 0 and GetVehiclePedIsIn(PlayerPedId(), false) == 0 then
+			hornCount = 0
+		end
+		if veh == 0 and lastvehicle ~= 0 then
+			lastvehicle = 0
+		end
+	end
+end)
+
 
 RegisterNetEvent('esx:setJob')
 AddEventHandler('esx:setJob', function(job)
@@ -79,122 +236,48 @@ end)
 
 RegisterNetEvent('esx_ownedcarthief:911')
 AddEventHandler('esx_ownedcarthief:911', function(gx, gy, gz, blipt)
-local XBlipTime = blipt
-	if PlayerData.job ~= nil then
-	  if PlayerData.job.name == 'police' or PlayerData.job.name == 'sheriff' or PlayerData.job.name == 'fbi' then
-		if Config.AlertPolice then
-			local transG = 250
-			local crimeBlip = AddBlipForCoord(gx, gy, gz)
-			SetBlipSprite(crimeBlip , 161) -- Blips qui flash bleu
-			SetBlipScale(crimeBlip , 2.0) -- Blips qui flash bleu
-			SetBlipColour(crimeBlip, 3) -- Blips qui flash bleu
-			PulseBlip(crimeBlip) -- Blips qui flash bleu
-			while transG ~= 0 do
-				Wait(Config.BlipTime * XBlipTime)
-				transG = transG - 1
-				if transG == 0 then
-					SetBlipSprite(crimeBlip,  2)
-					return
-				end
-			end
-		   
-		end
-	  end
-	end
-end)
+	local XBlipTime = blipt
 
-RegisterNetEvent('esx_ownedcarthief:useitemalarm')
-AddEventHandler('esx_ownedcarthief:useitemalarm', function(data)
-	local AlarmType = data
-	local Vehicle   = ESX.Game.GetVehicleInDirection()
-		if Vehicle ~= nil then
-			local vehicleData = ESX.Game.GetVehicleProperties(Vehicle)
-			TriggerServerEvent('esx_ownedcarthief:installalarm', vehicleData.plate, AlarmType)
+	if PlayerData ~= {} then
+		if PlayerData.job.name == 'police' or PlayerData.job.name == 'sheriff' or PlayerData.job.name == 'fbi' then
+			if Config.AlertPolice then
+				local transG = 250
+				local crimeBlip = AddBlipForCoord(gx, gy, gz)
+				SetBlipSprite(crimeBlip , 161) -- Blips qui flash bleu
+				SetBlipScale(crimeBlip , 2.0) -- Blips qui flash bleu
+				SetBlipColour(crimeBlip, 3) -- Blips qui flash bleu
+				PulseBlip(crimeBlip) -- Blips qui flash bleu
+				while transG ~= 0 do
+					Wait(Config.BlipTime * XBlipTime)
+					transG = transG - 1
+					if transG == 0 then
+						SetBlipSprite(crimeBlip,  2)
+						return
+					end
+				end
+			   
+			end
 		end
+	end
 end)
 
 RegisterNetEvent('esx_ownedcarthief:stealcar')
 AddEventHandler('esx_ownedcarthief:stealcar', function(item)
-
-    vehicle    = ESX.Game.GetVehicleInDirection()
-    stolecheck = false
-    timer      = 0
-local playerPed       = PlayerPedId()
-local coords          = GetEntityCoords(playerPed, true)
-local vehicleData     = ESX.Game.GetVehicleProperties(vehicle)
-local CheckOwnedPlate = false
-local itemused        = item
-	  vehplate        = vehicleData.plate
+	vehicle, stoleCheck, timer = ESX.Game.GetVehicleInDirection(), false, 0
+	local playerPed = PlayerPedId()
+	local coords = GetEntityCoords(playerPed, true)
+	local vehicleData = ESX.Game.GetVehicleProperties(vehicle)
+	local itemUsed = item
+	vehPlate = vehicleData.plate
 
 	ESX.UI.Menu.CloseAll()
 	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 3.0) and vehicleData ~= nil then
-		ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken, alarmsystem)
+		ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken, canInteract ,alarmSystem, alarmactive)
+			systemType = alarmSystem or 0
 			if isPlateTaken then
-					TriggerServerEvent('esx_ownedcarthief:itemused', itemused)
-					SystemType = alarmsystem
-					if itemused == "hammerwirecutter" then
-						timer = (60 * seconde)
-						callcops = 1
-						TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_HAMMERING", 0, true)
-						Citizen.Wait(5 * seconde)
-						TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-					elseif itemused == "unlockingtool" then
-						timer = (30 * seconde)
-						callcops = math.random(1,101)	
-						TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-					end
-
-					ShowTimer()
-
-					Citizen.Wait(math.random(1,21) * seconde)
-					if callcops <= Config.CallCopsChance and stolecheck then
-						if alarmsystem > 0 then
-							SetVehicleAlarm(vehicle, 1)
-						else
-							SetVehicleAlarm(vehicle, 0)
-						end
-						if alarmsystem >= 2 then
-							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
-						end
-						StartVehicleAlarm(vehicle)
-						Citizen.Wait(1 * seconde)
-						TaskPlayAnim(GetPlayerPed(-1), "gestures@m@standing@casual" ,"gesture_bring_it_on" ,8.0, -8.0, -1, 0, 0, false, false, false )
-						Citizen.Wait(2.5 * seconde)
-						TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-					end
-
+				StartCarSteal(itemUsed, true, vehicleData, false)
 			elseif not isPlateTaken and not Config.OnlyPlayerCar then
-				TriggerServerEvent('esx_ownedcarthief:itemused', itemused)
-				if itemused == "hammerwirecutter" then
-					timer = (60 * seconde)
-					callcops = 1
-					TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_HAMMERING", 0, true)
-					Citizen.Wait(5 * seconde)
-					TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-				elseif itemused == "unlockingtool" then
-					timer = (30 * seconde)
-					callcops = math.random(1,101)	
-					TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-				end
-
-				ShowTimer()
-
-				Citizen.Wait(math.random(1,21) * seconde)
-				if callcops <= Config.CallCopsChance then
-						if math.random(1,101) <= 81 then
-							SetVehicleAlarm(vehicle, 1)
-						else
-							SetVehicleAlarm(vehicle, 0)
-						end
-						if math.random(1,101) <= 41 then
-							TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)			
-						end
-						StartVehicleAlarm(vehicle)
-						Citizen.Wait(1 * seconde)
-						TaskPlayAnim(GetPlayerPed(-1), "gestures@m@standing@casual" ,"gesture_bring_it_on" ,8.0, -8.0, -1, 0, 0, false, false, false )
-						Citizen.Wait(2.5 * seconde)
-						TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
-				end
+				StartCarSteal(itemUsed, false, vehicleData, true)
 			elseif not isPlateTaken and Config.OnlyPlayerCar then
 				ESX.ShowNotification(_U('not_work_with_npc'))
 			end
@@ -202,16 +285,317 @@ local itemused        = item
 	end
 end)
 
-function ShowTimer()
 
+RegisterNetEvent('esx_ownedcarthief:alarminterfacemenu')
+AddEventHandler('esx_ownedcarthief:alarminterfacemenu', function()
+	local playerPed = PlayerPedId()
+	local veh = GetVehiclePedIsIn(playerPed, false)
+	if veh ~= 0 then
+		local vehicleData = ESX.Game.GetVehicleProperties(veh)
+		ESX.UI.Menu.CloseAll()
+
+		local elements = {}
+
+		ESX.TriggerServerCallback('esx_ownedcarthief:isPlateTaken', function (isPlateTaken, canInteract, security, alarmactive)
+		local _alarmactive = ""
+			if alarmactive == 1 then
+				_alarmactive = _U('active')
+			else
+				_alarmactive = _U('disable')
+			end
+			elements = {
+				{label = _U('alarmstatus', _alarmactive), value = ""},
+				{label = _U('activatesystem'),  value = 'activatesystem'},
+				{label = _U('disablesystem'),  value = 'disablesystem'},
+				{label = _U('cutalarm'),  value = 'cutalarm'}
+			}
+			if PlayerData.job.name == 'mecano' then
+				table.insert(elements, {label = _U('alarm1install', Config.Prices[4].price), value = 'basealarm'})
+				table.insert(elements, {label = _U('alarm2install', Config.Prices[5].price), value = 'modgps'})
+				table.insert(elements, {label = _U('alarm3install', Config.Prices[6].price), value = 'satcon'})
+			end
+
+			ESX.UI.Menu.Open(
+			'default', GetCurrentResourceName(), 'interfacemenu',
+			{
+				title    = _U('interfacemenu'),
+				align    = 'left',
+				elements = elements,
+			}, function(data, menu)
+				if data.current.value == "activatesystem" then
+					menu.close()
+					TriggerServerEvent("esx_ownedcarthief:togglealarm", vehicleData.plate, 1)
+				elseif data.current.value == "disablesystem" then
+					menu.close()
+					TriggerServerEvent("esx_ownedcarthief:togglealarm", vehicleData.plate, 0)
+				elseif data.current.value == "cutalarm" and canInteract then
+					menu.close()
+					TriggerServerEvent('esx_ownedcarthief:alarmgps', false)
+				elseif data.current.value == "basealarm" then
+					TriggerServerEvent('esx_ownedcarthief:installalarm', vehicleData.plate, 1)
+				elseif data.current.value == "modgps" then
+					TriggerServerEvent('esx_ownedcarthief:installalarm', vehicleData.plate, 2)
+				elseif data.current.value == "satcon" then
+					TriggerServerEvent('esx_ownedcarthief:installalarm', vehicleData.plate, 3)
+				end
+			end, function(data, menu)
+				ESX.UI.Menu.CloseAll()
+			end)
+		end, vehicleData.plate)
+	else
+		ESX.ShowNotification(_U('needtobesit'))
+	end
+end)
+
+RegisterNetEvent('esx_ownedcarthief:GPSBlip')
+AddEventHandler('esx_ownedcarthief:GPSBlip', function(id, data)
+	local AlarmStatus = data
+	local PID  = id
+	local veh  = GetVehiclePedIsIn(GetPlayerPed(GetPlayerFromServerId(PID)), false)
+	if AlarmStatus then
+		createBlip(veh)
+		alarm = true
+	else
+		removeBlip(veh)
+		SetVehicleAlarm(veh, false)
+		StartVehicleAlarm(veh)
+		alarm, systemType, step2, vehUnlock = false, 0 ,false, false
+	end
+
+end)
+
+
+function removeBlip(data)
+	local existingBlip = data
+
+	for k, existingBlip in pairs(carblips) do
+		RemoveBlip(existingBlip)
+	end
+end
+
+function SellStolenCar()
+local playerPed   = PlayerPedId()
+local veh         = GetVehiclePedIsIn(playerPed, false)
+local vehicleData = ESX.Game.GetVehicleProperties(veh)
+
+	if GetPedInVehicleSeat(veh, -1) == playerPed and not sellWait then
+		sellWait = true
+		ESX.TriggerServerCallback('esx_ownedcarthief:GetVehPrice', function (ownedcar, vehicles)
+			ESX.ShowNotification(_U('checkvehicle'))
+			Citizen.CreateThread(function()
+				Citizen.Wait(1000)
+				if ownedcar then
+					local found = false
+					for i=1, #vehicles, 1 do
+						local vehicle = vehicles[i]
+
+						if vehicleData.model == GetHashKey(vehicle.model) then
+							price = math.floor(vehicle.price / 100 * Config.ResellPercentage) 
+							ESX.Game.DeleteVehicle(veh)
+							TriggerServerEvent('esx_ownedcarthief:VehSold', true, price, vehicleData.plate)
+							sellWait = false
+							found = true
+							break
+						end
+					end
+					if not found then
+						ESX.ShowNotification(_U('wedontbuythis'))
+					end
+				elseif not Config.OnlyPlayerCar and not ownedcar then
+					price = Config.NpcCarPrice
+					ESX.Game.DeleteVehicle(veh)
+					TriggerServerEvent('esx_ownedcarthief:VehSold', false, price, vehicleData.plate)
+					sellWait = false
+				elseif Config.OnlyPlayerCar and not ownedcar then
+					ESX.ShowNotification(_U('not_work_with_npc'))
+					sellWait = false
+				end
+
+			end)
+		end, vehicleData.plate)
+	end
+end
+
+function OpenPawnshopMenu2()
+	local elements = {}
+		elements = {
+			{label = Config.Items.AlarmInterface.price.."$ - ".._U('alarminterface'),  value = Config.Items.AlarmInterface},
+			{label = Config.Items.HammerWireCutter.price.."$ - ".._U('hammerwirecutter'), value = Config.Items.HammerWireCutter}
+		}
+	if PlayerData.job.name ~= 'police' then
+		table.insert(elements, {label = Config.Items.Jammer.price.."$ - ".._U('jammer'), value = Config.Items.Jammer})
+		table.insert(elements, {label = Config.Items.UnlockingTool.price.."$ - ".._U('unlockingtool'), value = Config.Items.UnlockingTool})
+	end
+	if PlayerData.job.name == 'mechanic' then
+		table.insert(elements, {label = Config.Items.Alarm1.price.."$ - ".._U('alarm1'), value = Config.Items.Alarm1})
+		table.insert(elements, {label = Config.Items.Alarm2.price.."$ - ".._U('alarm2'), value = Config.Items.Alarm2})
+		table.insert(elements, {label = Config.Items.Alarm3.price.."$ - ".._U('alarm3'), value = Config.Items.Alarm3})
+	end
+	ESX.UI.Menu.Open(
+	'default', GetCurrentResourceName(), 'pawnshop2',
+	{
+		title    = _U('pawnshop_menu_title'),
+		align    = 'left',
+		elements = elements,
+	}, function(data, menu)
+		TriggerServerEvent('esx_ownedcarthief:buyitem', data.current.value)
+	end, function(data, menu)
+		ESX.UI.Menu.CloseAll()
+	end
+	)
+end
+
+function OpenPawnshopMenu3()
+	local elements = {}
+	local VehPrice = nil
+
+	ESX.TriggerServerCallback('esx_ownedcarthief:getpawnshopvehicle', function(vehicles)
+
+		for i=1, #vehicles, 1 do
+			local vehicle      = vehicles[i].vehicle
+			local VehDecode    = json.decode(vehicle.vehicle)
+			local VehModel     = VehDecode.model
+			local VehicleName  = GetDisplayNameFromVehicleModel(VehModel)
+			VehPrice           = math.floor(vehicle.price / Config.ResellPercentage * Config.RebuyPercentage)
+			local labelvehicle = (VehicleName .." ".. VehPrice .."$")
+
+			table.insert(elements, {label = labelvehicle, value = vehicle})
+			
+		end
+
+		ESX.UI.Menu.Open(
+		'default', GetCurrentResourceName(), 'pawnshop3',
+		{
+			title    = _U('pawnshop_menu_title'),
+			align    = 'left',
+			elements = elements,
+		},
+		function(data, menu)
+			if (data.current.value) then
+				menu.close()
+				local veh = data.current.value
+				TriggerServerEvent('esx_ownedcarthief:VehBuy', veh)
+			end
+		end, function(data, menu)
+			ESX.UI.Menu.CloseAll()
+		end
+	)	
+	end)
+end
+
+function Info(text, loop)
+	SetTextComponentFormat("STRING")
+	AddTextComponentString(text)
+	DisplayHelpTextFromStringLabel(0, loop, 1, 0)
+end
+
+function createBlip(id)
+	local veh  = id
+	local blip = GetBlipFromEntity(veh)
+
+	if not DoesBlipExist(blip) then -- Add blip and create head display on player
+		blip = AddBlipForEntity(veh)
+		SetBlipSprite(blip, 161)
+		ShowHeadingIndicatorOnBlip(blip, true) -- Player Blip indicator
+		SetBlipRotation(blip, math.ceil(GetEntityHeading(veh))) -- update rotation
+		BeginTextCommandSetBlipName("STRING")
+		AddTextComponentString(_U('stolen_car'))
+		EndTextCommandSetBlipName(blip)
+		SetBlipScale(blip, 1.5) -- set scale
+		SetBlipAsShortRange(blip, true)
+		
+		table.insert(carblips, blip) -- add blip to array so we can remove it later
+	end
+end
+
+function StartCarSteal(itemUsed, vehOwned, vehicleData, npcVeh)
+	TriggerServerEvent('esx_ownedcarthief:itemused', itemUsed.name)
+		callCops = math.random(1, itemUsed.warnCopsChance)
+		if itemUsed.name == "hammerwirecutter" then
+			TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_HAMMERING", 0, true)
+			Citizen.Wait(5 * second)
+			CarStealInProgress(itemUsed.warnCopsChance, itemUsed.sucessChance, npcVeh)
+		else
+			CarStealInProgress(itemUsed.warnCopsChance, itemUsed.sucessChance, npcVeh)
+		end
+end
+
+function CarStealInProgress(warnCopsChance, sucessChance, npcVeh)
+	local playerPed = PlayerPedId()
+	local coords = GetEntityCoords(playerPed, true)
+	local succes = false
+	timer = 30 * second
+	vehUnlock, stoleCheck = false, true
+
+	ShowTimer()
+	TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
+	CallCops(warnCopsChance, false, npcVeh)
+
+	Citizen.CreateThread(function()
+		while not vehUnlock and stoleCheck do
+			Citizen.Wait(100)
+			if timer <= 0 and not succes then
+				local vehicle2 = ESX.Game.GetVehicleInDirection()
+				succes = math.random(sucessChance, 101)
+				if vehicle == vehicle2 then 
+					if succes >= Config.SuccesChance then
+						CallCops(warnCopsChance, true, npcVeh)
+						SetVehicleDoorsLocked(vehicle, 1)
+						SetVehicleDoorsLockedForAllPlayers(vehicle, false)
+						vehUnlock, step1 = true, true
+						if systemType >= 1 or math.random(1,101) <= 81 and npcVeh then
+							SetVehicleAlarm(vehicle, true)
+							StartVehicleAlarm(vehicle)
+						end
+						ESX.ShowNotification(_U('vehicle_unlocked'))
+						ClearPedTasksImmediately(playerPed)
+					else
+						ESX.ShowNotification(_U('vehicle_notunlocked'))
+						CallCops(warnCopsChance, false, npcVeh)
+						timer = 30 * second
+						ShowTimer()
+						succes = false
+					end
+				end
+			end
+		end
+	end)
+end
+
+function CallCops(warnCopsChance, unlocked, npcVeh)
+	local playerPed = PlayerPedId()
+	local percent = math.random(1, 100)
+	if percent <= warnCopsChance or percent <= Config.CallCopsChance then
+		local coords = GetEntityCoords(playerPed, true)
+		
+		if math.random(1,101) <= 81 and npcVeh or systemType >= 2 then
+			SetVehicleAlarm(vehicle, true)
+			StartVehicleAlarm(vehicle)
+			alarm = true
+			TriggerServerEvent('esx_ownedcarthief:callcops', coords.x, coords.y, coords.z)
+		elseif math.random(1,101) <= 81 and npcVeh or systemType == 1 then
+			SetVehicleAlarm(vehicle, true)
+			StartVehicleAlarm(vehicle)
+		end
+		StartVehicleAlarm(vehicle)
+		if not unlocked then
+			Citizen.Wait(1 * second)
+			TaskPlayAnim(playerPed, "gestures@m@standing@casual" ,"gesture_bring_it_on" ,8.0, -8.0, -1, 0, 0, false, false, false)
+			Citizen.Wait(2.8 * second)
+			TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
+		end
+	end
+end
+
+function ShowTimer()
 	Citizen.CreateThread(function()
 		while timer > 0 do
 			Citizen.Wait(5)
 
-			raw_seconds = timer/1000
-			raw_minutes = raw_seconds/60
-			minutes = stringsplit(raw_minutes, ".")[1]
-			seconds = stringsplit(raw_seconds-(minutes*60), ".")[1]
+			local raw_seconds = timer/1000
+			local raw_minutes = raw_seconds/60
+			local minutes = stringsplit(raw_minutes, ".")[1]
+			local seconds = stringsplit(raw_seconds-(minutes*60), ".")[1]
 
 			SetTextFont(7)
 			SetTextProportional(0)
@@ -222,50 +606,28 @@ function ShowTimer()
 			SetTextDropShadow()
 			SetTextOutline()
 
-			local text = _U('please_wait', minutes, seconds)
+			local text = _U('please_wait', seconds)
 
 			SetTextCentre(true)
 			BeginTextCommandDisplayText("STRING")
 			AddTextComponentSubstringPlayerName(text)
 			EndTextCommandDisplayText(0.5, 0.8)
 
-			timer = timer - 20
-			stolecheck = true
-		end
-		
-		while timer == 0 and stolecheck do
-			        stolecheck = false
-			local 	vehicle2   = ESX.Game.GetVehicleInDirection()
-			local   playerPed  = PlayerPedId()
-			local   succes     = math.random(1,101)
-
-			ClearPedTasksImmediately(playerPed)
-			if vehicle == vehicle2 then
-				if succes <= Config.SuccesChance then
-					SetVehicleDoorsLocked(vehicle, 1)
-					SetVehicleDoorsLockedForAllPlayers(vehicle, false)
-					if callcops <= Config.CallCopsChance then
-						vehunlock = true
-					end
-					ESX.ShowNotification(_U('vehicle_unlocked'))
-				else
-					ESX.ShowNotification(_U('vehicle_notunlocked'))
-				end
-			end
+			timer = timer - 15
 		end
 	end)
 end
 
 function stringsplit(inputstr, sep)
-  if sep == nil then
-      sep = "%s"
-  end
-  local t={} ; i=1
-  for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-      t[i] = str
-      i = i + 1
-  end
-  return t
+	if sep == nil then
+		sep = "%s"
+	end
+	local t={} ; i=1
+	for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+		t[i] = str
+		i = i + 1
+	end
+	return t
 end
 
 function OpenPawnshopMenu()
@@ -289,13 +651,10 @@ function OpenPawnshopMenu()
 		elements = menuelements,
 	}, function(data, menu)
 			menu.close()
-			local zone = Config.Zones
-			for i=1, #zone, 1 do
-				if (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_rebuy' then
-					OpenPawnshopMenu3()
-				elseif (isNear(zone[i].Pos)) and data.current.value == 'pawnshop_buyitem' then
-					OpenPawnshopMenu2()
-				end
+			if data.current.value == 'pawnshop_rebuy' then
+				OpenPawnshopMenu3()
+			elseif data.current.value == 'pawnshop_buyitem' then
+				OpenPawnshopMenu2()
 			end
 	end, function(data, menu)
 		menu.close()
@@ -328,269 +687,12 @@ function OpenBlackGarageMenu()
 			align    = 'left',
 			elements = menuelements,
 		}, function(data, menu)
-				menu.close()
-				local zone = Config.Zones
-				for i=1, #zone, 1 do
-					if (isNear(zone[i].Pos)) and data.current.value == 'blackgarage_resell' then
-						SellStolenCar()
-					end
-				end
+			menu.close()
+			if data.current.value == 'blackgarage_resell' then
+				SellStolenCar()
+			end
 		end, function(data, menu)
 			menu.close()
 		 end)
 	end
 end
-
-function SellStolenCar()
-local playerPed   = PlayerPedId()
-local veh         = GetVehiclePedIsIn(playerPed, false)
-local vehicleData = ESX.Game.GetVehicleProperties(veh)
-
-	if GetPedInVehicleSeat(veh, -1) == playerPed and not SellWait then
-		SellWait = true
-		ESX.TriggerServerCallback('esx_ownedcarthief:GetVehPrice', function (ownedcar, vehicles)
-			ESX.ShowNotification(_U('checkvehicle'))
-			Citizen.CreateThread(function()
-				if ownedcar then
-					for i=1, #vehicles, 1 do
-						Citizen.Wait(1)
-						local vehicle = vehicles[i]
-
-						if vehicleData.model == GetHashKey(vehicle.model) then
-							price = math.floor(vehicle.price / 100 * Config.ResellPercentage) 
-							ESX.Game.DeleteVehicle(veh)
-							TriggerServerEvent('esx_ownedcarthief:VehSold', true, price, vehicleData.plate)
-							SellWait = false
-							break
-						end
-					end
-				elseif not Config.OnlyPlayerCar and not ownedcar then
-					price = Config.NpcCarPrice
-					ESX.Game.DeleteVehicle(veh)
-					TriggerServerEvent('esx_ownedcarthief:VehSold', false, price, vehicleData.plate)
-					SellWait = false
-				elseif Config.OnlyPlayerCar and not ownedcar then
-					ESX.ShowNotification(_U('not_work_with_npc'))
-					SellWait = false
-				end
-
-			end)
-		end, vehicleData.plate)
-	end
-end
-
-function OpenPawnshopMenu2()
-	ESX.UI.Menu.CloseAll()
-
-	local elements = {}
-	if PlayerData.job.name ~= 'police' then
-		elements = {
-			{label = _U('hammerwirecutter', Config.Prices[1].price), value = 'hammerwirecutter'},
-			{label = _U('jammer', Config.Prices[3].price), value = 'jammer'},
-			{label = _U('unlockingtool', Config.Prices[2].price), value = 'unlockingtool'}
-		}
-	end
-	if PlayerData.job.name == 'police' then
-		elements = {
-			{label = _U('alarminterface', Config.Prices[7].price),  value = 'alarminterface'}
-		}
-	end
-	if PlayerData.job.name == 'mechanic' then
-		table.insert(elements, {label = _U('alarm1', Config.Prices[4].price), value = 'alarm1'})
-		table.insert(elements, {label = _U('alarm2', Config.Prices[5].price), value = 'alarm2'})
-		table.insert(elements, {label = _U('alarm3', Config.Prices[6].price), value = 'alarm3'})
-	end
-	ESX.UI.Menu.Open(
-	'default', GetCurrentResourceName(), 'pawnshop2',
-	{
-		title    = _U('pawnshop_menu_title'),
-		align    = 'left',
-		elements = elements,
-	}, function(data, menu)
-	  	local zone = Config.Zones
-		for i=1, #zone, 1 do
-			if (isNear(zone[i].Pos)) then
-				TriggerServerEvent('esx_ownedcarthief:buyitem', data.current.value)
-			end
-		end
-	end, function(data, menu)
-		ESX.UI.Menu.CloseAll()
-	end
-	)
-end
-
-function OpenPawnshopMenu3()
-	local elements = {}
-	local VehPrice = nil
-
-	ESX.TriggerServerCallback('esx_ownedcarthief:getpawnshopvehicle', function(vehicles)
-
-		for i=1, #vehicles, 1 do
-			local vehicle      = vehicles[i].vehicle
-			local VehDecode    = json.decode(vehicle.vehicle)
-			local VehModel     = VehDecode.model
-    		local VehicleName  = GetDisplayNameFromVehicleModel(VehModel)
-			      VehPrice     = math.floor(vehicle.price / Config.ResellPercentage * Config.RebuyPercentage)
-    		local labelvehicle = (VehicleName .." ".. VehPrice .."$")
-
-			table.insert(elements, {label = labelvehicle, value = vehicle})
-			
-		end
-
-		ESX.UI.Menu.Open(
-		'default', GetCurrentResourceName(), 'pawnshop3',
-		{
-			title    = _U('pawnshop_menu_title'),
-			align    = 'left',
-			elements = elements,
-		},
-		function(data, menu)
-			if (data.current.value) then
-				menu.close()
-				local veh = data.current.value
-				TriggerServerEvent('esx_ownedcarthief:VehBuy', veh)
-			end
-		end, function(data, menu)
-			ESX.UI.Menu.CloseAll()
-		end
-	)	
-	end)
-end
-
-function Info(text, loop)
-			SetTextComponentFormat("STRING")
-			AddTextComponentString(text)
-			DisplayHelpTextFromStringLabel(0, loop, 1, 0)
-end
-
-function isNear(tabl)
-local distance = GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()),tabl.x,tabl.y,tabl.z, true)
-
-if(distance<3) then
-	return true
-	end
-		return false
-end
-
-function createBlip(id)
-	local veh  = id
-	local blip = GetBlipFromEntity(veh)
-
-	if not DoesBlipExist(blip) then -- Add blip and create head display on player
-		blip = AddBlipForEntity(veh)
-		SetBlipSprite(blip, 161)
-		ShowHeadingIndicatorOnBlip(blip, true) -- Player Blip indicator
-		SetBlipRotation(blip, math.ceil(GetEntityHeading(veh))) -- update rotation
-		BeginTextCommandSetBlipName("STRING")
-		AddTextComponentString(_U('stolen_car'))
-		EndTextCommandSetBlipName(blip)
-		SetBlipScale(blip, 1.5) -- set scale
-		SetBlipAsShortRange(blip, true)
-		
-		table.insert(carblips, blip) -- add blip to array so we can remove it later
-	end
-end
-
-RegisterNetEvent('esx_ownedcarthief:GPSBlip')
-AddEventHandler('esx_ownedcarthief:GPSBlip', function(id, data)
-	local AlarmStatus = data
-	local PID  = id
-	local veh  = GetVehiclePedIsIn(GetPlayerPed(GetPlayerFromServerId(PID)), false)
-	local veh2 = ESX.Game.GetVehicleInDirection()
-	if AlarmStatus then
-		createBlip(veh)
-		alarm = true
-	else
-		removeBlip(veh)
-		removeBlip(veh2)
-		alarm     = false
-		vehunlock = false
-	end
-
-end)
-
-Citizen.CreateThread(function()
-	local playerPed   = PlayerPedId()
-	local alarmtime   = 0
-	while true do
-		Citizen.Wait(1 * seconde)
-		if SystemType == 3 and (vehunlock or alarm) then
-			local veh         = GetVehiclePedIsIn(playerPed, false)
-			local vehicleData = ESX.Game.GetVehicleProperties(veh)
-			local coords      = GetEntityCoords(veh)
-			if vehunlock and veh ~= nil and vehplate == vehicleData.plate and GetPedInVehicleSeat(veh, -1) == playerPed then
-				local coords    = GetEntityCoords(veh)
-				TriggerServerEvent('esx_ownedcarthief:alarmgps', true, true,coords.x, coords.y, coords.z)
-				SetVehicleAlarm(vehicle, 1)
-				StartVehicleAlarm(vehicle)
-				vehunlock = false
-				alarm     = true
-			elseif not vehunlock and vehicle ~= nil and alarm and vehplate == vehicleData.plate then
-				alarmtime = (alarmtime + 2)
-				if alarmtime >= 10 then
-					SetVehicleAlarm(vehicle, 1)
-					StartVehicleAlarm(vehicle)
-					alarmtime = 0
-				end
-				TriggerServerEvent('esx_ownedcarthief:alarmgps', true, false, coords.x, coords.y, coords.z)
-				Citizen.Wait(1 * seconde)
-			else
-				Citizen.Wait(1 * seconde)
-				alarmtime   = 0
-			end
-		end
-	end
-
-end)
-
-RegisterNetEvent('esx_ownedcarthief:removeBlip')
-AddEventHandler('esx_ownedcarthief:removeBlip', function()
-	TriggerServerEvent('esx_ownedcarthief:alarmgps', false ,false)
-end)
-
-function removeBlip(data)
-	local existingBlip = data
-
-	for k, existingBlip in pairs(carblips) do
-		RemoveBlip(existingBlip)
-	end
-end
-
-Citizen.CreateThread(function()
-local zone = Config.Zones
-	for i=1, #zone, 1 do
-		if zone[i].OnMap then
-			local blip = AddBlipForCoord(zone[i].Pos.x, zone[i].Pos.y, zone[i].z)
-			SetBlipSprite (blip, 488)
-			SetBlipDisplay(blip, 4)
-			SetBlipColour (blip, 1)
-			SetBlipScale  (blip, 1.2)
-			SetBlipAsShortRange(blip, true)
-
-			BeginTextCommandSetBlipName("STRING")
-			AddTextComponentString(_U('pawn_shop_blip'))
-			EndTextCommandSetBlipName(blip)
-		end
-	end
-		while true do
-		Citizen.Wait(0)
-			for i=1, #zone, 1 do
-				DrawMarker(1,zone[i].Pos.x,zone[i].Pos.y,zone[i].Pos.z-1,0,0,0,0,0,0,5.001,5.0001,0.5001,255,0,0,200,0,0,0,0)
-			
-			
-				if(isNear(zone[i].Pos)) and (zone[i].Name) == "PawnShop" then
-					Info(_U('pawn_shop_menu'))
-					if(IsControlJustPressed(1, 38)) then
-						OpenPawnshopMenu()
-					end
-				elseif(isNear(zone[i].Pos)) and (zone[i].Name) == "BlackGarage" then
-					Info(_U('black_garage_menu'))
-					if(IsControlJustPressed(1, 38)) then
-						OpenBlackGarageMenu()
-					end
-				end
-			end
-			
-		end
-end)
-

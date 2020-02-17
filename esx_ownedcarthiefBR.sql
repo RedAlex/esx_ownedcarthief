@@ -1,6 +1,7 @@
 USE `essentialmode`;
 
-ALTER TABLE `owned_vehicles` ADD `security` int(1) NOT NULL DEFAULT '0' COMMENT 'status sistema de alarme' AFTER `owner`;
+ALTER TABLE `owned_vehicles` ADD `security` int(1) NOT NULL DEFAULT '0' COMMENT 'Alarme no nível do sistema' AFTER `owner`;
+ALTER TABLE `owned_vehicles` ADD `alarmactive` int(1) NOT NULL DEFAULT '0' COMMENT 'Status sistema de alarme' AFTER `security`;
 
 CREATE TABLE `pawnshop_vehicles` (
 	`owner` varchar(30) DEFAULT NULL,
@@ -13,12 +14,12 @@ CREATE TABLE `pawnshop_vehicles` (
 	PRIMARY KEY (`plate`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `items` (name, label, `limit`) VALUES
+INSERT INTO `items` (name, label, weight) VALUES
 	('hammerwirecutter', 'Kit para arrombamento basico', 1),
 	('unlockingtool', 'Kit para arrombamento sofisticado (Ilegal)', 1),
 	('jammer', 'Bloqueador de sinal (Ilegal)', 1),
 	('alarminterface', "Interface do sistema de alarme", 1),
-	('alarm1', 'Alarme basico', 1),
-	('alarm2', 'Alarme com GPS barato', 1),
-	('alarm3', 'Alarme com GPS premium', 1)
+	('alarm1', "sistema básico de alarme com alto-falante", 1),
+	('alarm2', "módulo de ligação de emergência", 1),
+	('alarm3', "módulo de posicionamento contínuo GPS", 1)
 ;
