@@ -186,7 +186,7 @@ local lastvehicle = 0
 	while true do
 		Citizen.Wait(1 * second)
 		local veh = GetVehiclePedIsIn(PlayerPedId(), false)
-		if veh ~= 0 and veh ~= lastvehicle then
+		if veh ~= 0 and veh ~= lastvehicle and GetPedInVehicleSeat(veh, -1) == PlayerPedId() then
 			systemType, step1, step2, vehUnlock, warn = 0, false, false, false, false
 			vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
 			lastvehicle = vehicle
@@ -309,7 +309,7 @@ AddEventHandler('esx_ownedcarthief:alarminterfacemenu', function()
 				{label = _U('disablesystem'),  value = 'disablesystem'},
 				{label = _U('cutalarm'),  value = 'cutalarm'}
 			}
-			if PlayerData.job.name == 'mecano' then
+			if PlayerData.job.name == 'mechanic' then
 				table.insert(elements, {label = _U('alarm1install', Config.Prices[4].price), value = 'basealarm'})
 				table.insert(elements, {label = _U('alarm2install', Config.Prices[5].price), value = 'modgps'})
 				table.insert(elements, {label = _U('alarm3install', Config.Prices[6].price), value = 'satcon'})
