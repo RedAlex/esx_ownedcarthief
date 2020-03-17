@@ -310,9 +310,9 @@ AddEventHandler('esx_ownedcarthief:alarminterfacemenu', function()
 				{label = _U('cutalarm'),  value = 'cutalarm'}
 			}
 			if PlayerData.job.name == 'mechanic' then
-				table.insert(elements, {label = _U('alarm1install', Config.Prices[4].price), value = 'basealarm'})
-				table.insert(elements, {label = _U('alarm2install', Config.Prices[5].price), value = 'modgps'})
-				table.insert(elements, {label = _U('alarm3install', Config.Prices[6].price), value = 'satcon'})
+				table.insert(elements, {label = _U('alarm1install'), value = 'basealarm'})
+				table.insert(elements, {label = _U('alarm2install'), value = 'modgps'})
+				table.insert(elements, {label = _U('alarm3install'), value = 'satcon'})
 			end
 
 			ESX.UI.Menu.Open(
