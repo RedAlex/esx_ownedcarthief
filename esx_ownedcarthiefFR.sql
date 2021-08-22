@@ -4,7 +4,7 @@ ALTER TABLE `owned_vehicles` ADD `security` int(1) NOT NULL DEFAULT '0' COMMENT 
 ALTER TABLE `owned_vehicles` ADD `alarmactive` int(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system state' AFTER `security`;
 
 CREATE TABLE `pawnshop_vehicles` (
-	`owner` varchar(30) DEFAULT NULL,
+	`owner` varchar(40) DEFAULT NULL,
 	`security` int(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system state',
 	`plate` varchar(12) NOT NULL,
 	`vehicle` longtext,
