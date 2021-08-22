@@ -36,7 +36,7 @@ AddEventHandler('esx_ownedcarthief:VehBuy', function(data)
 		TriggerClientEvent('esx:showNotification', _source, _U('vehicle_buy', buyprice))
 			MySQL.Async.execute('INSERT INTO owned_vehicles (owner, security, plate, vehicle) VALUES (@owner, @security, @plate, @vehicle)',
 				{
-					['@owner']    = GetPlayerIdentifiers(source)[1],
+					['@owner']    = xPlayer.identifier,
 					['@security'] = vehicle.security,
 					['@plate']    = vehicle.plate,
 					['@vehicle']  = vehicle.vehicle
