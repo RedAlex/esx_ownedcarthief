@@ -174,7 +174,7 @@ ESX.RegisterServerCallback('esx_ownedcarthief:getpawnshopvehicle', function(sour
 	
 		for i=1, #result, 1 do
 			local vehicle = result[i]
-			if xPlayer.getIdentifier() == vehicle.owner or (vehicle.expiration) < os.time() then
+			if xPlayer.identifier == vehicle.owner or (vehicle.expiration) < os.time() then
 				table.insert(vehicles, {vehicle = vehicle})
 			end
 		end
