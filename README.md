@@ -45,6 +45,7 @@ This system sends the vehicle's position in REAL-TIME to the policeman in case o
 # Required resources
 - es_extended
 - esx_vehicleshop
+- mysql-async (or oxmysql as alternative)
 
 # Optional
 - ox_inventory (Auto-detected - items will be registered automatically)
@@ -54,6 +55,11 @@ This system sends the vehicle's position in REAL-TIME to the policeman in case o
 - Code - Alain Proviste  https://github.com/EagleOnee
 - Translation PT/BR - iKaoticx https://github.com/iKaoticx
 - Code based on the resources of https://github.com/ESX-Org
+
+# Documentation
+- 📖 [CHANGELOG.md](CHANGELOG.md) - Historique complet des versions et changements
+- 🔧 [INSTALLATION.md](INSTALLATION.md) - Guide du système d'installation automatique SQL
+- 🎒 [OX_INVENTORY.md](OX_INVENTORY.md) - Guide de compatibilité ox_inventory
 ___
 # esx_ownedcarthief
 
@@ -102,6 +108,7 @@ Ce system envoie la position du véhicule EN TEMPS RÉEL au policier en cas de d
 # Ressources requises
 - es_extended
 - esx_vehicleshop
+- mysql-async (ou oxmysql en alternative)
 
 # Optionnel
 - ox_inventory (Auto-détecté - les items seront enregistrés automatiquement)
@@ -112,6 +119,11 @@ Ce system envoie la position du véhicule EN TEMPS RÉEL au policier en cas de d
 - Code - Alain Proviste https://github.com/EagleOnee
 - Traduction PT/BR - iKaoticx https://github.com/iKaoticx
 - Code basé sur les ressource de https://github.com/ESX-Org
+
+# Documentation
+- 📖 [CHANGELOG.md](CHANGELOG.md) - Historique complet des versions et changements
+- 🔧 [INSTALLATION.md](INSTALLATION.md) - Guide du système d'installation automatique SQL
+- 🎒 [OX_INVENTORY.md](OX_INVENTORY.md) - Guide de compatibilité ox_inventory
 ___
 # esx_ownedcarthief
 
@@ -158,10 +170,16 @@ Este sistema envia a posição do veículo em TEMPO REAL para o policial em caso
 # Recursos requeridos
 - es_extended
 - esx_vehicleshop
+- mysql-async (ou oxmysql como alternativa)
 
 # Opcional
 - ox_inventory (Auto-detectado - os itens serão registrados automaticamente)
 
+
+# Documentação
+- 📖 [CHANGELOG.md](CHANGELOG.md) - Histórico completo de versões e mudanças
+- 🔧 [INSTALLATION.md](INSTALLATION.md) - Guia do sistema de instalação automática SQL
+- 🎒 [OX_INVENTORY.md](OX_INVENTORY.md) - Guia de compatibilidade ox_inventory
 # Criado por
 - Script - Alex Garcio     https://github.com/RedAlex
 - Script - Alain Proviste  https://github.com/EagleOnee
