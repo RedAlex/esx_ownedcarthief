@@ -3,7 +3,7 @@ Config = {}
 -- GENERAL SETTING
 Config.SuccesChance  = 60   --How many % of chance to unlock a car. (0-100)
 Config.OnlyPlayerCar = true --Set false if you want to picklock work on npc car (true-false)
-Config.Locale        = 'fr' --Set lang (fr-en-br)
+Config.Locale        = 'fr' --Set lang (fr-en-br-de) | Le système installe automatiquement les tables/colonnes SQL avec les labels de la langue choisie
 
 -- POLICE
 Config.PoliceNumberRequired = 0    --Set how many cops is need to try stole a car. (0-64)

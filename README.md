@@ -34,8 +34,12 @@ This system sends the vehicle's position in REAL-TIME to the policeman in case o
 1. Download the .Zip from this repository.
 2. Extract it with your favorite program.
 3. Copy the project to your ressource folder.
-4. Don't forget to import the esx_ownedcarthiefEN.sql file to your database.
-5. Add "start esx_ownedcarthief" in your `server.cfg`
+4. ~~Don't forget to import the esx_ownedcarthiefEN.sql file to your database.~~ **OBSOLETE - Installation automatique**
+5. Configure the language in `config.lua` (Config.Locale = 'en', 'fr', 'br' or 'de')
+6. Add "start esx_ownedcarthief" in your `server.cfg`
+7. The script will automatically create the necessary tables and columns on first start
+
+**Note:** The SQL files are now installed automatically based on the language selected in the config. The system checks if tables/columns exist and creates them with the appropriate labels for your language.
 
 
 # Required resource
@@ -43,6 +47,9 @@ This system sends the vehicle's position in REAL-TIME to the policeman in case o
 - Async 2.0
 - Esx
 - esx_vehicleshop actual version
+
+# Optional
+- ox_inventory (Auto-detected - items will be registered automatically)
 
 # Created by
 - Code - Alex Garcio     https://github.com/RedAlex
@@ -86,8 +93,12 @@ Ce system envoie la position du véhicule EN TEMPS RÉEL au policier en cas de d
 1. Téléchargez le .Zip
 2. Extractez-le avec votre programme favori.
 3. Copiez le projet dans votre dossier ressource.
-4. N'oubliez pas d'importer le esx_ownedcarthiefFR.sql a votre base de données.
-5. Ajoutez "start esx_ownedcarthief" dans votre `server.cfg`
+4. ~~N'oubliez pas d'importer le esx_ownedcarthiefFR.sql a votre base de données.~~ **OBSOLÈTE - Installation automatique**
+5. Configurez la langue dans `config.lua` (Config.Locale = 'en', 'fr', 'br' ou 'de')
+6. Ajoutez "start esx_ownedcarthief" dans votre `server.cfg`
+7. Le script créera automatiquement les tables et colonnes nécessaires au premier démarrage
+
+**Note:** Les fichiers SQL sont maintenant installés automatiquement en fonction de la langue sélectionnée dans la config. Le système vérifie si les tables/colonnes existent et les crée avec les labels appropriés pour votre langue.
 
 
 # Ressource requis
@@ -95,6 +106,9 @@ Ce system envoie la position du véhicule EN TEMPS RÉEL au policier en cas de d
 - Async 2.0
 - Esx
 - esx_vehicleshop Version actuel
+
+# Optionnel
+- ox_inventory (Auto-détecté - les items seront enregistrés automatiquement)
 
 
 # Créer par
@@ -144,7 +158,12 @@ Este sistema envia a posição do veículo em TEMPO REAL para o policial em caso
 
 # Resources requeridos
 - EssentialMode 5.0.3
-- Async 2.0 
+- Async 2.0
+- Esx
+- esx_vehicleshop
+
+# Opcional
+- ox_inventory (Auto-detectado - os itens serão registrados automaticamente) 
 - Esx
 - esx_vehicleshop Versão Atual
 

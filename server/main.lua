@@ -4,6 +4,256 @@ TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 local vehicles = nil
 local minute, waitTime = 60000, 0
 
+-- === SYSTÈME D'INSTALLATION AUTOMATIQUE DE LA BASE DE DONNÉES ===
+local SQLLabels = {
+	fr = {
+		hammerwirecutter = 'Marteau & coupe fil',
+		unlockingtool = 'Outils de cambriolage (Illégal)',
+		jammer = 'Brouilleur de Signal (Illégal)',
+		alarminterface = "Interface de système d'alarm",
+		alarm1 = "système d'alarme de base avec haut-parleur",
+		alarm2 = "module de liaison avec les urgences",
+		alarm3 = "module de positionnement continu GPS"
+	},
+	en = {
+		hammerwirecutter = 'Hammer & wire cutter',
+		unlockingtool = 'Burglary tools (Illegal)',
+		jammer = 'Signal jammer (Illegal)',
+		alarminterface = "Alarm system interface",
+		alarm1 = "basic alarm system with loudspeaker",
+		alarm2 = "emergency liaison module",
+		alarm3 = "GPS continuous positioning module"
+	},
+	br = {
+		hammerwirecutter = 'Kit para arrombamento basico',
+		unlockingtool = 'Kit para arrombamento sofisticado (Ilegal)',
+		jammer = 'Bloqueador de sinal (Ilegal)',
+		alarminterface = "Interface do sistema de alarme",
+		alarm1 = "sistema básico de alarme com alto-falante",
+		alarm2 = "módulo de ligação de emergência",
+		alarm3 = "módulo de posicionamento contínuo GPS"
+	},
+	de = {
+		hammerwirecutter = 'Hammer- und Drahtschneider',
+		unlockingtool = 'Einbruchswerkzeuge (Illegal)',
+		jammer = 'Signalstörer (illegal)',
+		alarminterface = "Schnittstelle für Alarmsysteme",
+		alarm1 = "Grundalarmsystem mit Lautsprecher",
+		alarm2 = "Notfallverbindungsmodul",
+		alarm3 = "GPS Continuous Positioning Module"
+	}
+}
+
+-- Descriptions multilingues pour ox_inventory
+local SQLDescriptions = {
+	fr = {
+		hammerwirecutter = "Outil basique pour forcer les véhicules. Haute chance de déclencher les alarmes.",
+		unlockingtool = "Outils de cambriolage avancés. Meilleur taux de réussite avec moins de risque d'alarme.",
+		jammer = "Coupe la transmission du signal pour empêcher les systèmes d'alarme d'appeler la police.",
+		alarminterface = "Interface de gestion des systèmes d'alarme. Utilisée par la police et les mécaniciens.",
+		alarm1 = "Système d'alarme de base avec haut-parleur. Émet une alarme sonore lorsqu'elle est déclenchée.",
+		alarm2 = "Alarme avancée qui notifie la police et envoie la position du véhicule lorsqu'elle est déclenchée.",
+		alarm3 = "Système d'alarme GPS high-tech avec suivi en temps réel pour la police."
+	},
+	en = {
+		hammerwirecutter = "Basic tool for breaking into vehicles. High chance to trigger alarms.",
+		unlockingtool = "Advanced burglary tools. Better success rate with lower alarm trigger chance.",
+		jammer = "Cuts signal transmission to prevent alarm systems from calling police.",
+		alarminterface = "Interface for managing vehicle alarm systems. Used by police and mechanics.",
+		alarm1 = "Basic alarm system with loudspeaker. Emits audible alarm when triggered.",
+		alarm2 = "Advanced alarm that notifies police and sends vehicle position when triggered.",
+		alarm3 = "High-tech GPS alarm system with real-time tracking for police."
+	},
+	br = {
+		hammerwirecutter = "Ferramenta básica para arrombar veículos. Alta chance de disparar alarmes.",
+		unlockingtool = "Ferramentas de arrombamento avançadas. Melhor taxa de sucesso com menor chance de alarme.",
+		jammer = "Corta a transmissão de sinal para evitar que os sistemas de alarme chamem a polícia.",
+		alarminterface = "Interface para gerenciar sistemas de alarme de veículos. Usado por polícia e mecânicos.",
+		alarm1 = "Sistema de alarme básico com alto-falante. Emite alarme audível quando acionado.",
+		alarm2 = "Alarme avançado que notifica a polícia e envia a posição do veículo quando acionado.",
+		alarm3 = "Sistema de alarme GPS de alta tecnologia com rastreamento em tempo real para a polícia."
+	},
+	de = {
+		hammerwirecutter = "Grundlegendes Werkzeug zum Einbrechen in Fahrzeuge. Hohe Chance, Alarme auszulösen.",
+		unlockingtool = "Fortgeschrittene Einbruchwerkzeuge. Bessere Erfolgsrate mit geringerer Alarmauslösechance.",
+		jammer = "Unterbricht die Signalübertragung, um zu verhindern, dass Alarmsysteme die Polizei rufen.",
+		alarminterface = "Schnittstelle zur Verwaltung von Fahrzeugalarmsystemen. Von Polizei und Mechanikern verwendet.",
+		alarm1 = "Grundlegendes Alarmsystem mit Lautsprecher. Gibt hörbaren Alarm beim Auslösen ab.",
+		alarm2 = "Fortgeschrittener Alarm, der die Polizei benachrichtigt und die Fahrzeugposition beim Auslösen sendet.",
+		alarm3 = "High-Tech-GPS-Alarmsystem mit Echtzeit-Tracking für die Polizei."
+	}
+}
+
+-- Fonction d'initialisation de la base de données (exécution séquentielle)
+CreateThread(function()
+	local locale = Config.Locale or 'en'
+	local labels = SQLLabels[locale] or SQLLabels['en']
+	
+	-- Étape 1: Vérifier que la table owned_vehicles existe (devrait exister via ESX)
+	MySQL.Async.fetchAll("SHOW TABLES LIKE 'owned_vehicles'", {}, function(tableResult)
+		if #tableResult == 0 then
+			print("^1[esx_ownedcarthief] ERREUR: La table 'owned_vehicles' n'existe pas! Assurez-vous qu'ESX est correctement installé.^0")
+			return
+		end
+		
+		-- Étape 2: Ajouter la colonne 'security' si elle n'existe pas
+		MySQL.Async.fetchAll("SHOW COLUMNS FROM owned_vehicles LIKE 'security'", {}, function(securityResult)
+			if #securityResult == 0 then
+				MySQL.Async.execute("ALTER TABLE owned_vehicles ADD security INT(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system level' AFTER owner", {}, function()
+					-- Étape 3: Ajouter la colonne 'alarmactive' après 'security'
+					addAlarmActiveColumn(labels)
+				end)
+			else
+				-- La colonne security existe déjà, passer à la suivante
+				addAlarmActiveColumn(labels)
+			end
+		end)
+	end)
+end)
+
+-- Fonction pour ajouter la colonne alarmactive
+function addAlarmActiveColumn(labels)
+	MySQL.Async.fetchAll("SHOW COLUMNS FROM owned_vehicles LIKE 'alarmactive'", {}, function(alarmResult)
+		if #alarmResult == 0 then
+			MySQL.Async.execute("ALTER TABLE owned_vehicles ADD alarmactive INT(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system state' AFTER security", {}, function()
+				-- Étape 4: Créer la table pawnshop_vehicles
+				createPawnshopTable(labels)
+			end)
+		else
+			-- La colonne alarmactive existe déjà, passer à la suivante
+			createPawnshopTable(labels)
+		end
+	end)
+end
+
+-- Fonction pour créer la table pawnshop_vehicles
+function createPawnshopTable(labels)
+	MySQL.Async.fetchAll("SHOW TABLES LIKE 'pawnshop_vehicles'", {}, function(tablePawnResult)
+		if #tablePawnResult == 0 then
+			MySQL.Async.execute([[
+				CREATE TABLE pawnshop_vehicles (
+					owner varchar(40) DEFAULT NULL,
+					security int(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system level',
+					plate varchar(12) NOT NULL,
+					vehicle longtext,
+					price int(15) NOT NULL,
+					expiration int(15) NOT NULL,
+					PRIMARY KEY (plate)
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8
+			]], {}, function()
+				-- Étape 5: Vérifier que la table items existe avant d'insérer
+				checkAndAddItems(labels)
+			end)
+		else
+			-- La table existe déjà, passer aux items
+			checkAndAddItems(labels)
+		end
+	end)
+end
+
+-- Fonction pour vérifier et ajouter les items
+function checkAndAddItems(labels)
+	-- Détecter si ox_inventory est installé et démarré
+	local useOxInventory = GetResourceState('ox_inventory') == 'started'
+	
+	if useOxInventory then
+		addItemsToOxInventory(labels)
+	else
+		addItemsToESX(labels)
+	end
+end
+
+-- Fonction pour ajouter les items via ox_inventory
+function addItemsToOxInventory(labels)
+	local locale = Config.Locale or 'en'
+	local descriptions = SQLDescriptions[locale] or SQLDescriptions['en']
+	
+	local itemsToAdd = {
+		{name = 'hammerwirecutter', label = labels.hammerwirecutter, weight = 1000, description = descriptions.hammerwirecutter},
+		{name = 'unlockingtool', label = labels.unlockingtool, weight = 1000, description = descriptions.unlockingtool},
+		{name = 'jammer', label = labels.jammer, weight = 500, description = descriptions.jammer},
+		{name = 'alarminterface', label = labels.alarminterface, weight = 200, description = descriptions.alarminterface},
+		{name = 'alarm1', label = labels.alarm1, weight = 1500, description = descriptions.alarm1},
+		{name = 'alarm2', label = labels.alarm2, weight = 2000, description = descriptions.alarm2},
+		{name = 'alarm3', label = labels.alarm3, weight = 2500, description = descriptions.alarm3}
+	}
+	
+	for _, item in ipairs(itemsToAdd) do
+		-- Vérifier si l'item existe déjà dans ox_inventory
+		local existingItem = exports.ox_inventory:Items(item.name)
+		
+		if not existingItem then
+			-- L'item n'existe pas, on peut l'enregistrer
+			local success, err = pcall(function()
+				exports.ox_inventory:RegisterItem(item.name, {
+					label = item.label,
+					weight = item.weight,
+					stack = true,
+					close = true,
+					description = item.description
+				})
+			end)
+			
+			if not success then
+				print("^1[esx_ownedcarthief] ERREUR lors de l'enregistrement de l'item '" .. item.name .. "': " .. tostring(err) .. "^0")
+			end
+		end
+		-- Si l'item existe déjà, on le saute silencieusement (pas de doublon)
+	end
+end
+
+-- Fonction pour ajouter les items via ESX (méthode SQL)
+function addItemsToESX(labels)
+	-- Vérifier que la table items existe
+	MySQL.Async.fetchAll("SHOW TABLES LIKE 'items'", {}, function(itemsTableResult)
+		if #itemsTableResult == 0 then
+			print("^1[esx_ownedcarthief] ERREUR: La table 'items' n'existe pas! Assurez-vous qu'ESX est correctement installé.^0")
+			return
+		end
+		
+		-- La table items existe, ajouter les items un par un
+		local itemsToAdd = {
+			{name = 'hammerwirecutter', label = labels.hammerwirecutter},
+			{name = 'unlockingtool', label = labels.unlockingtool},
+			{name = 'jammer', label = labels.jammer},
+			{name = 'alarminterface', label = labels.alarminterface},
+			{name = 'alarm1', label = labels.alarm1},
+			{name = 'alarm2', label = labels.alarm2},
+			{name = 'alarm3', label = labels.alarm3}
+		}
+		
+		local itemIndex = 1
+		
+		-- Fonction récursive pour ajouter les items séquentiellement
+		local function addNextItem()
+			if itemIndex > #itemsToAdd then
+				return
+			end
+			
+			local item = itemsToAdd[itemIndex]
+			MySQL.Async.fetchAll("SELECT * FROM items WHERE name = @name", {
+				['@name'] = item.name
+			}, function(result)
+				if #result == 0 then
+					MySQL.Async.execute("INSERT INTO items (name, label, weight) VALUES (@name, @label, 1)", {
+						['@name'] = item.name,
+						['@label'] = item.label
+					}, function()
+						itemIndex = itemIndex + 1
+						addNextItem()
+					end)
+				else
+					-- L'item existe déjà, passer au suivant
+					itemIndex = itemIndex + 1
+					addNextItem()
+				end
+			end)
+		end
+		
+		addNextItem()
+	end)
+end
+
 
 RegisterServerEvent('esx_ownedcarthief:callcops')
 AddEventHandler('esx_ownedcarthief:callcops', function(gx, gy, gz)
