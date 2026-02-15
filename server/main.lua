@@ -431,9 +431,8 @@ ESX.RegisterServerCallback('esx_ownedcarthief:getpawnshopvehicle', function(sour
 end)
 
 ESX.RegisterServerCallback('esx_ownedcarthief:GetVehPrice', function (source, cb, plate)
-local _source  = source
-local vehiclefound = false
-local _model       = model
+	local _source  = source
+	local vehiclefound = false
 	if waitTime == 0 then
 		howmanycops(function(cops)
 			if cops >= Config.PoliceNumberRequired then

@@ -1,5 +1,4 @@
 ESX = exports['es_extended']:getSharedObject()
-local PlayerData = ESX.GetPlayerData()
 local carblips = {}
 local second, callCops, timer, systemType = 1000, 0, 0, 0
 local vehicle, vehPlate = nil, nil
@@ -7,14 +6,6 @@ local alarm, sellWait, step1, stoleCheck, vehUnlock = false, false, false, false
 local CurrentAction, CurrentActionMsg, CurrentActionData = nil, '', {}
 local HasAlreadyEnteredMarker, LastZone, LastPart, LastPartNum
 
--- Event handlers pour les mises à jour du PlayerData
-RegisterNetEvent('esx:playerLoaded', function(xPlayer)
-	PlayerData = xPlayer
-end)
-
-RegisterNetEvent('esx:onPlayerLogout', function()
-	PlayerData = {}
-end)
 
 CreateThread(function()
 	while true do
@@ -120,10 +111,7 @@ AddEventHandler('esx_ownedcarthief:hasEnteredMarker', function(hospital, part, p
 end)
 
 AddEventHandler('esx_ownedcarthief:hasExitedMarker', function(hospital, part, partNum)
-	if not isInShopMenu then
-		ESX.UI.Menu.CloseAll()
-	end
-
+	ESX.UI.Menu.CloseAll()
 	CurrentAction = nil
 end)
 
@@ -157,7 +145,9 @@ CreateThread(function()
 				alarmTime   = 0
 			end
 		elseif systemType == 2 and vehUnlock and GetVehiclePedIsIn(PlayerPedId(), false) ~= 0 then
-			if vehicle ~= nil and alarm and vehPlate == vehicleData.plate then
+			local veh2 = GetVehiclePedIsIn(PlayerPedId(), false)
+			local vehicleData2 = ESX.Game.GetVehicleProperties(veh2)
+			if vehicle ~= nil and alarm and vehPlate == vehicleData2.plate then
 				alarmTime = (alarmTime + 2)
 				if alarmTime >= 10 then
 					SetVehicleAlarm(vehicle, true)
@@ -225,17 +215,12 @@ local lastvehicle = 0
 end)
 
 
-RegisterNetEvent('esx:setJob')
-AddEventHandler('esx:setJob', function(job)
-	PlayerData.job = job
-end)
-
 RegisterNetEvent('esx_ownedcarthief:911')
 AddEventHandler('esx_ownedcarthief:911', function(gx, gy, gz, blipt)
 	local XBlipTime = blipt
 
-	if PlayerData ~= {} then
-		if PlayerData.job.name == 'police' or PlayerData.job.name == 'sheriff' or PlayerData.job.name == 'fbi' then
+	if ESX.PlayerData and ESX.PlayerData.job then
+		if ESX.PlayerData.job.name == 'police' or ESX.PlayerData.job.name == 'sheriff' or ESX.PlayerData.job.name == 'fbi' then
 			if Config.AlertPolice then
 				local transG = 250
 				local crimeBlip = AddBlipForCoord(gx, gy, gz)
@@ -305,7 +290,7 @@ AddEventHandler('esx_ownedcarthief:alarminterfacemenu', function()
 				{label = _U('disablesystem'),  value = 'disablesystem'},
 				{label = _U('cutalarm'),  value = 'cutalarm'}
 			}
-			if PlayerData.job.name == 'mechanic' then
+			if ESX.PlayerData and ESX.PlayerData.job and ESX.PlayerData.job.name == 'mechanic' then
 				table.insert(elements, {label = _U('alarm1install'), value = 'basealarm'})
 				table.insert(elements, {label = _U('alarm2install'), value = 'modgps'})
 				table.insert(elements, {label = _U('alarm3install'), value = 'satcon'})
@@ -418,14 +403,16 @@ function OpenPawnshopMenu2()
 			{label = Config.Items.AlarmInterface.price.."$ - ".._U('alarminterface'),  value = Config.Items.AlarmInterface},
 			{label = Config.Items.HammerWireCutter.price.."$ - ".._U('hammerwirecutter'), value = Config.Items.HammerWireCutter}
 		}
-	if PlayerData.job.name ~= 'police' then
-		table.insert(elements, {label = Config.Items.Jammer.price.."$ - ".._U('jammer'), value = Config.Items.Jammer})
-		table.insert(elements, {label = Config.Items.UnlockingTool.price.."$ - ".._U('unlockingtool'), value = Config.Items.UnlockingTool})
-	end
-	if PlayerData.job.name == 'mechanic' then
-		table.insert(elements, {label = Config.Items.Alarm1.price.."$ - ".._U('alarm1'), value = Config.Items.Alarm1})
-		table.insert(elements, {label = Config.Items.Alarm2.price.."$ - ".._U('alarm2'), value = Config.Items.Alarm2})
-		table.insert(elements, {label = Config.Items.Alarm3.price.."$ - ".._U('alarm3'), value = Config.Items.Alarm3})
+	if ESX.PlayerData and ESX.PlayerData.job then
+		if ESX.PlayerData.job.name ~= 'police' then
+			table.insert(elements, {label = Config.Items.Jammer.price.."$ - ".._U('jammer'), value = Config.Items.Jammer})
+			table.insert(elements, {label = Config.Items.UnlockingTool.price.."$ - ".._U('unlockingtool'), value = Config.Items.UnlockingTool})
+		end
+		if ESX.PlayerData.job.name == 'mechanic' then
+			table.insert(elements, {label = Config.Items.Alarm1.price.."$ - ".._U('alarm1'), value = Config.Items.Alarm1})
+			table.insert(elements, {label = Config.Items.Alarm2.price.."$ - ".._U('alarm2'), value = Config.Items.Alarm2})
+			table.insert(elements, {label = Config.Items.Alarm3.price.."$ - ".._U('alarm3'), value = Config.Items.Alarm3})
+		end
 	end
 	ESX.UI.Menu.Open(
 	'default', GetCurrentResourceName(), 'pawnshop2',
@@ -505,6 +492,7 @@ function createBlip(id)
 end
 
 function StartCarSteal(itemUsed, vehOwned, vehicleData, npcVeh)
+	local playerPed = PlayerPedId()
 	TriggerServerEvent('esx_ownedcarthief:itemused', itemUsed.name)
 		callCops = math.random(1, itemUsed.warnCopsChance)
 		if itemUsed.name == "hammerwirecutter" then
@@ -666,10 +654,12 @@ function OpenBlackGarageMenu()
 	local playerPed   = PlayerPedId()
 	local veh         = GetVehiclePedIsIn(playerPed, false)
 
-	for i=1, #Config.PawnShopBLJob, 1 do
-		local BLJob = Config.PawnShopBLJob[i]
-		if PlayerData.job.name == BLJob.JobName then
-			cantsellcar = true
+	if ESX.PlayerData and ESX.PlayerData.job then
+		for i=1, #Config.PawnShopBLJob, 1 do
+			local BLJob = Config.PawnShopBLJob[i]
+			if ESX.PlayerData.job.name == BLJob.JobName then
+				cantsellcar = true
+			end
 		end
 	end
 	
