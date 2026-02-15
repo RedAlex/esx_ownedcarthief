@@ -3,7 +3,7 @@ game 'gta5'
 
 description 'esx_ownedcarthief'
 
-version '1.0.1'
+version '1.1.0'
 
 shared_scripts {
   '@es_extended/locale.lua',
