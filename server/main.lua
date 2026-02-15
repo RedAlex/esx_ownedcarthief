@@ -1,5 +1,4 @@
-ESX = nil
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+ESX = exports['es_extended']:getSharedObject()
 
 local vehicles = nil
 local minute, waitTime = 60000, 0
@@ -499,7 +498,7 @@ ESX.RegisterUsableItem('jammer', function(source) --GPS Jammer cut the signal of
 	local xPlayer  = ESX.GetPlayerFromId(_source)
 	local xPlayers = ESX.GetPlayers()
 
-	Citizen.Wait(3000)
+	Wait(3000)
 	Alarm(_source, "", false)
 	xPlayer.removeInventoryItem('jammer', 1)
 end)

@@ -1,31 +1,27 @@
-ESX = nil
-local PlayerData, carblips = {}, {}
+ESX = exports['es_extended']:getSharedObject()
+local PlayerData = ESX.GetPlayerData()
+local carblips = {}
 local second, callCops, timer, systemType = 1000, 0, 0, 0
 local vehicle, vehPlate = nil, nil
 local alarm, sellWait, step1, stoleCheck, vehUnlock = false, false, false, false, false
 local CurrentAction, CurrentActionMsg, CurrentActionData = nil, '', {}
 local HasAlreadyEnteredMarker, LastZone, LastPart, LastPartNum
 
-Citizen.CreateThread(function()
-	while ESX == nil do
-		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-		Citizen.Wait(0)
-	end
-
-	while ESX.GetPlayerData().job == nil do
-		Citizen.Wait(10)
-	end
-
-	PlayerData = ESX.GetPlayerData()
-
+-- Event handlers pour les mises à jour du PlayerData
+RegisterNetEvent('esx:playerLoaded', function(xPlayer)
+	PlayerData = xPlayer
 end)
 
-Citizen.CreateThread(function()
+RegisterNetEvent('esx:onPlayerLogout', function()
+	PlayerData = {}
+end)
+
+CreateThread(function()
 	while true do
-		Citizen.Wait(5)
+		Wait(5)
 		if stoleCheck then
 			local coordx,coordy,coordz = table.unpack(GetEntityCoords(PlayerPedId(),true))
-			Citizen.Wait(1 * second)
+			Wait(1 * second)
 			local newx,newy,newz = table.unpack(GetEntityCoords(PlayerPedId(),true))
 			if GetDistanceBetweenCoords(coordx,coordy,coordz, newx,newy,newz) > 2 then
 				stoleCheck = false
@@ -35,7 +31,7 @@ Citizen.CreateThread(function()
 	end
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
 	for k,v in pairs(Config.Zones.Shops) do
 		if v.OnMap then
 			for i = 1, #v.Pos, 1 do
@@ -54,9 +50,9 @@ Citizen.CreateThread(function()
 	end
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
 	while true do
-		Citizen.Wait(0)
+		Wait(0)
 		local playerCoords = GetEntityCoords(PlayerPedId())
 		local letSleep, isInMarker, hasExited = true, false, false
 		local currentZone, currentPart, currentPartNum
@@ -110,7 +106,7 @@ Citizen.CreateThread(function()
 		end
 
 		if letSleep then
-			Citizen.Wait(500)
+			Wait(500)
 		end
 	end
 end)
@@ -131,12 +127,12 @@ AddEventHandler('esx_ownedcarthief:hasExitedMarker', function(hospital, part, pa
 	CurrentAction = nil
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
 	local alarmTime = 0
 	local step2 = false
 
 	while true do
-		Citizen.Wait(1 * second)
+		Wait(1 * second)
 		if systemType == 3 and vehUnlock and GetVehiclePedIsIn(PlayerPedId(), false) ~= 0 then
 			local veh         = GetVehiclePedIsIn(PlayerPedId(), false)
 			local vehicleData = ESX.Game.GetVehicleProperties(veh)
@@ -155,9 +151,9 @@ Citizen.CreateThread(function()
 					alarmTime = 0
 				end
 				TriggerServerEvent('esx_ownedcarthief:alarmgps', true, false, coords.x, coords.y, coords.z)
-				Citizen.Wait(1 * second)
+				Wait(1 * second)
 			else
-				Citizen.Wait(1 * second)
+				Wait(1 * second)
 				alarmTime   = 0
 			end
 		elseif systemType == 2 and vehUnlock and GetVehiclePedIsIn(PlayerPedId(), false) ~= 0 then
@@ -168,9 +164,9 @@ Citizen.CreateThread(function()
 					StartVehicleAlarm(vehicle)
 					alarmTime = 0
 				end
-				Citizen.Wait(1 * second)
+				Wait(1 * second)
 			else
-				Citizen.Wait(1 * second)
+				Wait(1 * second)
 				alarmTime   = 0
 			end
 		end
@@ -178,13 +174,13 @@ Citizen.CreateThread(function()
 	end
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
 local hornCount = 0
 local warn = false
 local lastvehicle = 0
 
 	while true do
-		Citizen.Wait(1 * second)
+		Wait(1 * second)
 		local veh = GetVehiclePedIsIn(PlayerPedId(), false)
 		if veh ~= 0 and veh ~= lastvehicle and GetPedInVehicleSeat(veh, -1) == PlayerPedId() then
 			systemType, step1, step2, vehUnlock, warn = 0, false, false, false, false
@@ -204,13 +200,13 @@ local lastvehicle = 0
 		if warn then
 			if hornCount < 9 and warn then
 				StartVehicleHorn(vehicle, 0, "HELDDOWN", false)
-				Citizen.Wait(100)
+				Wait(100)
 				if hornCount >= 3 then
 					StartVehicleHorn(vehicle, 0, "HELDDOWN", false)
-					Citizen.Wait(100)
+					Wait(100)
 					if hornCount >= 6 then
 						StartVehicleHorn(vehicle, 0, "HELDDOWN", false)
-						Citizen.Wait(100)
+						Wait(100)
 					end
 				end
 				hornCount = hornCount + 1
@@ -382,8 +378,8 @@ local vehicleData = ESX.Game.GetVehicleProperties(veh)
 		sellWait = true
 		ESX.TriggerServerCallback('esx_ownedcarthief:GetVehPrice', function (ownedcar, vehicles)
 			ESX.ShowNotification(_U('checkvehicle'))
-			Citizen.CreateThread(function()
-				Citizen.Wait(1000)
+			CreateThread(function()
+				Wait(1000)
 				if ownedcar then
 					local found = false
 					for i=1, #vehicles, 1 do
@@ -513,7 +509,7 @@ function StartCarSteal(itemUsed, vehOwned, vehicleData, npcVeh)
 		callCops = math.random(1, itemUsed.warnCopsChance)
 		if itemUsed.name == "hammerwirecutter" then
 			TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_HAMMERING", 0, true)
-			Citizen.Wait(5 * second)
+		Wait(5 * second)
 			CarStealInProgress(itemUsed.warnCopsChance, itemUsed.sucessChance, npcVeh)
 		else
 			CarStealInProgress(itemUsed.warnCopsChance, itemUsed.sucessChance, npcVeh)
@@ -531,9 +527,9 @@ function CarStealInProgress(warnCopsChance, sucessChance, npcVeh)
 	TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
 	CallCops(warnCopsChance, false, npcVeh)
 
-	Citizen.CreateThread(function()
+	CreateThread(function()
 		while not vehUnlock and stoleCheck do
-			Citizen.Wait(100)
+			Wait(100)
 			if timer <= 0 and not succes then
 				local vehicle2 = ESX.Game.GetVehicleInDirection()
 				succes = math.random(sucessChance, 101)
@@ -579,18 +575,18 @@ function CallCops(warnCopsChance, unlocked, npcVeh)
 		end
 		StartVehicleAlarm(vehicle)
 		if not unlocked then
-			Citizen.Wait(1 * second)
+			Wait(1 * second)
 			TaskPlayAnim(playerPed, "gestures@m@standing@casual" ,"gesture_bring_it_on" ,8.0, -8.0, -1, 0, 0, false, false, false)
-			Citizen.Wait(2.8 * second)
+			Wait(2.8 * second)
 			TaskStartScenarioInPlace(playerPed, "prop_human_parking_meter", 0, true)
 		end
 	end
 end
 
 function ShowTimer()
-	Citizen.CreateThread(function()
+	CreateThread(function()
 		while timer > 0 do
-			Citizen.Wait(5)
+			Wait(5)
 
 			local raw_seconds = timer/1000
 			local raw_minutes = raw_seconds/60
