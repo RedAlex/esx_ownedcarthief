@@ -1,71 +1,71 @@
-# 🔧 Système d'Installation Automatique SQL
+# 🔧 Automatic SQL Installation System
 
 ## 📋 Description
 
-Ce script dispose d'un **système d'installation automatique** de la base de données qui élimine le besoin d'importer manuellement les fichiers SQL.
+This script features an **automatic installation system** for the database that eliminates the need to manually import SQL files.
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-Le système vérifie et crée automatiquement au démarrage :
+The system automatically checks and creates at startup:
 
-### Tables et Colonnes
-- ✅ Ajout de la colonne `security` dans `owned_vehicles`
-- ✅ Ajout de la colonne `alarmactive` dans `owned_vehicles`
-- ✅ Création de la table `pawnshop_vehicles`
-- ✅ Insertion des items nécessaires dans la table `items`
+### Tables and Columns
+- ✅ Adding `security` column to `owned_vehicles`
+- ✅ Adding `alarmactive` column to `owned_vehicles`
+- ✅ Creating `pawnshop_vehicles` table
+- ✅ Inserting necessary items into `items` table
 
-### Multi-langues Supportées
-- 🇫🇷 Français (`fr`)
-- 🇬🇧 Anglais (`en`)
-- 🇧🇷 Portugais Brésilien (`br`)
-- 🇩🇪 Allemand (`de`)
+### Supported Languages
+- 🇫🇷 French (`fr`)
+- 🇬🇧 English (`en`)
+- 🇧🇷 Brazilian Portuguese (`br`)
+- 🇩🇪 German (`de`)
 
 ## 🚀 Installation
 
-### Étape 1 : Configuration
-Ouvrez `config.lua` et définissez votre langue :
+### Step 1: Configuration
+Open `config.lua` and set your language:
 ```lua
-Config.Locale = 'fr' -- Choisissez: 'fr', 'en', 'br' ou 'de'
+Config.Locale = 'fr' -- Choose: 'fr', 'en', 'br' or 'de'
 ```
 
-### Étape 2 : Démarrage
-Ajoutez la ressource à votre `server.cfg` :
+### Step 2: Startup
+Add the resource to your `server.cfg`:
 ```
 start esx_ownedcarthief
 ```
 
-### Étape 3 : C'est tout ! 🎉
-Le script se charge du reste automatiquement au premier démarrage.
+### Step 3: That's it! 🎉
+The script handles the rest automatically on first startup.
 
-### 🎒 Bonus : Compatibilité ox_inventory
-Si vous utilisez **ox_inventory**, le script le détectera automatiquement et enregistrera les items via ox_inventory au lieu de la table SQL. Aucune configuration supplémentaire n'est nécessaire !
+### 🎒 Bonus: ox_inventory Compatibility
+If you use **ox_inventory**, the script will automatically detect it and register items via ox_inventory instead of the SQL table. No additional configuration needed!
 
-👉 Consultez [OX_INVENTORY.md](OX_INVENTORY.md) pour plus de détails.
+👉 See [OX_INVENTORY.md](OX_INVENTORY.md) for more details.
 
-## 🔍 Comment ça fonctionne ?
+## 🔍 How Does It Work?
 
-Au démarrage du serveur, le script :
+At server startup, the script:
 
-1. **Lit la langue configurée** dans `config.lua`
-2. **Vérifie l'existence** de chaque colonne/table
-3. **Crée uniquement ce qui manque** (pas de duplication)
-4. **Utilise les labels appropriés** selon la langue choisie
-5. **Affiche des logs** dans la console pour suivre la progression
+1. **Reads the configured language** from `config.lua`
+2. **Checks the existence** of each column/table
+3. **Creates only what's missing** (no duplication)
+4. **Uses appropriate labels** based on the selected language
+5. **Displays logs** in the console to track progress
 
-## 📝 Logs de la Console
+## 📝 Console Logs
 
-Vous verrez des messages comme :
+You will see messages like:
 ```
-[esx_ownedcarthief] Vérification de la base de données...
-[esx_ownedcarthief] Ajout de la colonne 'security' à la table owned_vehicles...
-[esx_ownedcarthief] Colonne 'security' ajoutée avec succès!
-[esx_ownedcarthief] Item 'hammerwirecutter' ajouté avec succès!
-[esx_ownedcarthief] Vérification de la base de données terminée!
+[esx_ownedcarthief] Checking database...
+[esx_ownedcarthief] Adding 'security' column to owned_vehicles table...
+[esx_ownedcarthief] 'security' column added successfully!
+[esx_ownedcarthief] Item 'hammerwirecutter' added successfully!
+[esx_ownedcarthief] Database check complete!
 ```
 
-## ⚙️ Structure des Données Créées
+## ⚙️ Created Data Structure
 
-### Colonnes ajoutées à `owned_vehicles`
+### Columns added to `owned_vehicles`
 ```sql
 security INT(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system level'
 alarmactive INT(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system state'
@@ -84,7 +84,7 @@ CREATE TABLE pawnshop_vehicles (
 )
 ```
 
-### Items ajoutés (avec labels selon la langue)
+### Items added (with labels based on language)
 - `hammerwirecutter`
 - `unlockingtool`
 - `jammer`
@@ -93,47 +93,47 @@ CREATE TABLE pawnshop_vehicles (
 - `alarm2`
 - `alarm3`
 
-## 🛡️ Sécurité
+## 🛡️ Security
 
-- ✅ Vérification avant chaque création (pas de duplication)
-- ✅ Pas d'écrasement des données existantes
-- ✅ Compatible avec les installations manuelles précédentes
-- ✅ Peut être relancé sans problème
+- ✅ Verification before each creation (no duplication)
+- ✅ No overwriting existing data
+- ✅ Compatible with previous manual installations
+- ✅ Can be restarted without issue
 
 ## ❓ FAQ
 
-**Q: Que se passe-t-il si j'ai déjà importé les fichiers SQL manuellement ?**  
-R: Aucun problème ! Le système détecte ce qui existe déjà et ne crée que ce qui manque.
+**Q: What happens if I've already imported SQL files manually?**  
+A: No problem! The system detects what already exists and only creates what's missing.
 
-**Q: Puis-je changer de langue après l'installation ?**  
-R: Oui, mais seuls les **nouveaux** items seront créés avec les nouveaux labels. Les items existants garderont leurs anciens labels. Pour mettre à jour tous les labels, vous devrez les modifier manuellement dans la base de données.
+**Q: Can I change language after installation?**  
+A: Yes, but only **new** items will be created with the new labels. Existing items will keep their old labels. To update all labels, you'll need to manually modify them in the database.
 
-**Q: Les fichiers .sql sont-ils encore nécessaires ?**  
-R: Non, ils sont conservés pour référence uniquement. Le système les a remplacés.
+**Q: Are .sql files still needed?**  
+A: No, they are kept for reference only. The system has replaced them.
 
-**Q: Comment vérifier que l'installation a réussi ?**  
-R: Consultez les logs de la console ou vérifiez votre base de données pour confirmer la présence des colonnes/tables.
+**Q: How to verify installation succeeded?**  
+A: Check the console logs or verify your database to confirm the presence of columns/tables.
 
-## 🔧 Dépannage
+## 🔧 Troubleshooting
 
-**Problème:** Les tables ne se créent pas  
-**Solution:** Vérifiez que :
-- MySQL-Async est bien installé et fonctionnel
-- Votre utilisateur MySQL a les permissions CREATE et ALTER
-- La base de données `essentialmode` existe
+**Problem:** Tables are not being created  
+**Solution:** Verify that:
+- MySQL-Async is properly installed and functional
+- Your MySQL user has CREATE and ALTER permissions
+- The `essentialmode` database exists
 
-**Problème:** Les labels ne sont pas dans la bonne langue  
+**Problem:** Labels are not in the correct language  
 **Solution:** 
-- Vérifiez `Config.Locale` dans config.lua
-- Les langues supportées sont : 'fr', 'en', 'br', 'de'
+- Check `Config.Locale` in config.lua
+- Supported languages are: 'fr', 'en', 'br', 'de'
 
 ## 📞 Support
 
-Pour toute question ou problème :
-- Vérifiez d'abord les logs de la console
-- Assurez-vous d'avoir les ressources requises installées
-- Consultez le README principal pour plus d'informations
+For any questions or issues:
+- First check the console logs
+- Make sure you have the required resources installed
+- See the main README for more information
 
 ---
-**Créé par:** RedAlex & EagleOnee  
-**Système d'installation automatique ajouté:** 2026
+**Created by:** RedAlex & EagleOnee  
+**Automatic installation system added:** 2026

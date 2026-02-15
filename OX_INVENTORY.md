@@ -1,36 +1,36 @@
-# 🎒 Compatibilité ox_inventory
+# 🎒 ox_inventory Compatibility
 
 ## 📋 Description
 
-Ce script détecte **automatiquement** si vous utilisez ox_inventory et enregistre les items de manière appropriée sans configuration manuelle.
+This script **automatically** detects if you use ox_inventory and registers items appropriately without manual configuration.
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-### Détection Automatique
-- ✅ Détection automatique d'ox_inventory au démarrage
-- ✅ Enregistrement automatique des items via l'export ox_inventory
-- ✅ Pas de modification nécessaire dans les fichiers ox_inventory
-- ✅ Compatible avec ESX standard si ox_inventory n'est pas présent
+### Automatic Detection
+- ✅ Automatic detection of ox_inventory at startup
+- ✅ Automatic registration of items via ox_inventory export
+- ✅ No modification needed in ox_inventory files
+- ✅ Compatible with standard ESX if ox_inventory is not present
 
 ## 🚀 Installation
 
-### Cas 1: Vous utilisez ox_inventory
+### Case 1: You use ox_inventory
 
-Aucune action supplémentaire n'est requise ! Le script :
-1. Détecte ox_inventory automatiquement
-2. Enregistre les items directement via l'export
-3. Affiche dans la console : `ox_inventory détecté! Utilisation d'ox_inventory pour les items.`
+No additional action required! The script:
+1. Detects ox_inventory automatically
+2. Registers items directly via export
+3. Displays in console: `ox_inventory detected! Using ox_inventory for items.`
 
-### Cas 2: Vous utilisez ESX standard
+### Case 2: You use standard ESX
 
-Le script fonctionne comme avant :
-1. Détecte l'absence d'ox_inventory
-2. Utilise la table SQL `items` classique
-3. Affiche dans la console : `Utilisation du système d'items ESX standard.`
+The script works as before:
+1. Detects the absence of ox_inventory
+2. Uses the classic SQL `items` table
+3. Displays in console: `Using standard ESX items system.`
 
-## 📦 Items Enregistrés
+## 📦 Registered Items
 
-Les 7 items suivants sont enregistrés automatiquement :
+The following 7 items are registered automatically:
 
 | Item | Label (EN) | Poids | Description |
 |------|-----------|-------|-------------|
@@ -42,26 +42,26 @@ Les 7 items suivants sont enregistrés automatiquement :
 | `alarm2` | Emergency module | 2000g | Advanced alarm with police notification |
 | `alarm3` | GPS module | 2500g | GPS tracking alarm system |
 
-## 🔧 Propriétés des Items (ox_inventory)
+## 🔧 Item Properties (ox_inventory)
 
-Tous les items sont enregistrés avec les propriétés suivantes :
+All items are registered with the following properties:
 ```lua
 {
-    label = "Item Label",     -- Label multilingue selon Config.Locale
-    weight = 1000,            -- Poids en grammes
-    stack = true,             -- Empilable
-    close = true,             -- Ferme l'inventaire après utilisation
-    description = "..."       -- Description de l'item
+    label = "Item Label",     -- Multilingual label based on Config.Locale
+    weight = 1000,            -- Weight in grams
+    stack = true,             -- Stackable
+    close = true,             -- Closes inventory after use
+    description = "..."       -- Item description
 }
 ```
 
-## 🎨 Images des Items
+## 🎨 Item Images
 
-Pour ajouter des images dans ox_inventory :
+To add images in ox_inventory:
 
-1. Créez ou téléchargez les images (format PNG, 100x100px recommandé)
-2. Placez-les dans : `ox_inventory/web/images/`
-3. Nommez les fichiers exactement comme les items :
+1. Create or download images (PNG format, 100x100px recommended)
+2. Place them in: `ox_inventory/web/images/`
+3. Name files exactly as the items:
    - `hammerwirecutter.png`
    - `unlockingtool.png`
    - `jammer.png`
@@ -70,67 +70,67 @@ Pour ajouter des images dans ox_inventory :
    - `alarm2.png`
    - `alarm3.png`
 
-Les items seront automatiquement associés aux images.
+Items will be automatically associated with the images.
 
-## 📝 Fichier de Référence
+## 📝 Reference File
 
-Un fichier `items.lua` est fourni avec la ressource contenant la définition complète des items pour référence. Vous pouvez :
+An `items.lua` file is provided with the resource containing the complete item definitions for reference. You can:
 
-### Option A (Recommandé): Laisser le script gérer tout automatiquement
-- Aucune action nécessaire
-- Le script enregistre les items au démarrage
+### Option A (Recommended): Let the script handle everything automatically
+- No action needed
+- The script registers items at startup
 
-### Option B: Ajouter manuellement à ox_inventory
-Si vous préférez gérer les items manuellement :
+### Option B: Add manually to ox_inventory
+If you prefer to manage items manually:
 
-1. Ouvrez `ox_inventory/data/items.lua`
-2. Copiez le contenu de `esx_ownedcarthief/items.lua`
-3. Ajoutez-le dans le return de items.lua
+1. Open `ox_inventory/data/items.lua`
+2. Copy the content from `esx_ownedcarthief/items.lua`
+3. Add it to the return of items.lua
 
-⚠️ **Note**: Cette méthode n'est pas nécessaire si vous laissez le script s'exécuter normalement.
+⚠️ **Note**: This method is not necessary if you let the script run normally.
 
-## 📊 Logs de Console
+## 📊 Console Logs
 
-### Avec ox_inventory :
+### With ox_inventory:
 ```
-[esx_ownedcarthief] Vérification de la base de données...
-[esx_ownedcarthief] ox_inventory détecté! Utilisation d'ox_inventory pour les items.
-[esx_ownedcarthief] Item 'hammerwirecutter' enregistré dans ox_inventory!
-[esx_ownedcarthief] Item 'unlockingtool' enregistré dans ox_inventory!
+[esx_ownedcarthief] Checking database...
+[esx_ownedcarthief] ox_inventory detected! Using ox_inventory for items.
+[esx_ownedcarthief] Item 'hammerwirecutter' registered in ox_inventory!
+[esx_ownedcarthief] Item 'unlockingtool' registered in ox_inventory!
 ...
-[esx_ownedcarthief] Vérification de la base de données terminée avec succès!
+[esx_ownedcarthief] Database check completed successfully!
 ```
 
-### Sans ox_inventory (ESX standard) :
+### Without ox_inventory (standard ESX):
 ```
-[esx_ownedcarthief] Vérification de la base de données...
-[esx_ownedcarthief] Utilisation du système d'items ESX standard.
-[esx_ownedcarthief] Ajout de l'item 'hammerwirecutter'...
-[esx_ownedcarthief] Item 'hammerwirecutter' ajouté avec succès!
+[esx_ownedcarthief] Checking database...
+[esx_ownedcarthief] Using standard ESX items system.
+[esx_ownedcarthief] Adding item 'hammerwirecutter'...
+[esx_ownedcarthief] Item 'hammerwirecutter' added successfully!
 ...
 ```
 
-## 🔄 Migration d'ESX vers ox_inventory
+## 🔄 Migration from ESX to ox_inventory
 
-Si vous migrez d'ESX standard vers ox_inventory :
+If you're migrating from standard ESX to ox_inventory:
 
-1. ✅ Installez ox_inventory
-2. ✅ Redémarrez votre serveur
-3. ✅ Les items seront automatiquement enregistrés dans ox_inventory
-4. ℹ️ Les anciens items dans la table SQL ne seront pas supprimés mais ne seront plus utilisés
+1. ✅ Install ox_inventory
+2. ✅ Restart your server
+3. ✅ Items will be automatically registered in ox_inventory
+4. ℹ️ Old items in the SQL table will not be deleted but will no longer be used
 
-## ⚙️ Configuration Technique
+## ⚙️ Technical Configuration
 
-### Code de Détection
+### Detection Code
 ```lua
 local useOxInventory = GetResourceState('ox_inventory') == 'started'
 ```
 
-Le script vérifie l'état de la ressource ox_inventory :
-- `'started'` → Utilise ox_inventory
-- Autre état → Utilise ESX standard
+The script checks the state of ox_inventory resource:
+- `'started'` → Uses ox_inventory
+- Other state → Uses standard ESX
 
-### Enregistrement des Items
+### Item Registration
 ```lua
 exports.ox_inventory:RegisterItem(item_name, {
     label = item_label,
@@ -143,58 +143,58 @@ exports.ox_inventory:RegisterItem(item_name, {
 
 ## ❓ FAQ
 
-**Q: Dois-je modifier quelque chose dans ox_inventory ?**  
-R: Non, le script s'occupe de tout automatiquement.
+**Q: Do I need to modify anything in ox_inventory?**  
+A: No, the script handles everything automatically.
 
-**Q: Les items seront-ils en double si je les ajoute manuellement ?**  
-R: Le script utilise pcall pour éviter les erreurs si un item existe déjà. Pas de problème de duplication.
+**Q: Will items be duplicated if I add them manually?**  
+A: The script uses pcall to avoid errors if an item already exists. No duplication issues.
 
-**Q: Les labels sont-ils multilingues avec ox_inventory ?**  
-R: Oui, les labels utilisent la langue définie dans `Config.Locale`.
+**Q: Are labels multilingual with ox_inventory?**  
+A: Yes, labels use the language defined in `Config.Locale`.
 
-**Q: Que se passe-t-il si j'ajoute ox_inventory après avoir utilisé ESX ?**  
-R: Redémarrez simplement le serveur. Le script détectera ox_inventory et utilisera la nouvelle méthode.
+**Q: What happens if I add ox_inventory after using ESX?**  
+A: Simply restart the server. The script will detect ox_inventory and use the new method.
 
-**Q: Les poids des items sont-ils personnalisables ?**  
-R: Oui, modifiez les valeurs dans la fonction `addItemsToOxInventory` du fichier `server/main.lua`.
+**Q: Are item weights customizable?**  
+A: Yes, modify the values in the `addItemsToOxInventory` function in `server/main.lua` file.
 
-**Q: Puis-je désactiver l'auto-détection ?**  
-R: Vous pouvez forcer l'utilisation d'ESX en commentant la ligne de détection, mais ce n'est pas recommandé.
+**Q: Can I disable auto-detection?**  
+A: You can force ESX usage by commenting out the detection line, but it's not recommended.
 
-## 🛡️ Avantages d'ox_inventory
+## 🛡️ ox_inventory Advantages
 
-- 🎯 Interface moderne et intuitive
-- 📊 Gestion du poids des items
-- 🎨 Support des images personnalisées
-- 🔒 Système de slots
-- 📦 Meilleure organisation de l'inventaire
-- ⚡ Performances optimisées
+- 🎯 Modern and intuitive interface
+- 📊 Item weight management
+- 🎨 Custom image support
+- 🔒 Slot system
+- 📦 Better inventory organization
+- ⚡ Optimized performance
 
-## 🔧 Dépannage
+## 🔧 Troubleshooting
 
-**Problème**: Les items n'apparaissent pas dans ox_inventory  
+**Problem**: Items don't appear in ox_inventory  
 **Solution**: 
-- Vérifiez que ox_inventory est bien démarré : `ensure ox_inventory` dans server.cfg
-- Vérifiez les logs de console pour les erreurs
-- Assurez-vous que esx_ownedcarthief démarre APRÈS ox_inventory
+- Verify that ox_inventory is started: `ensure ox_inventory` in server.cfg
+- Check console logs for errors
+- Make sure esx_ownedcarthief starts AFTER ox_inventory
 
-**Problème**: Erreur "attempt to call a nil value (field 'RegisterItem')"  
+**Problem**: Error "attempt to call a nil value (field 'RegisterItem')"  
 **Solution**: 
-- ox_inventory n'est pas correctement installé ou configuré
-- Mettez à jour ox_inventory vers la dernière version
+- ox_inventory is not properly installed or configured
+- Update ox_inventory to the latest version
 
-**Problème**: Les images ne s'affichent pas  
+**Problem**: Images don't display  
 **Solution**: 
-- Vérifiez que les fichiers PNG sont dans `ox_inventory/web/images/`
-- Les noms de fichiers doivent correspondre exactement aux noms des items
-- Redémarrez ox_inventory après l'ajout des images
+- Verify that PNG files are in `ox_inventory/web/images/`
+- File names must match exactly the item names
+- Restart ox_inventory after adding images
 
 ## 📞 Support
 
-Pour les problèmes spécifiques à ox_inventory :
-- [Documentation ox_inventory](https://overextended.dev/ox_inventory)
-- [GitHub ox_inventory](https://github.com/overextended/ox_inventory)
+For ox_inventory specific issues:
+- [ox_inventory Documentation](https://overextended.dev/ox_inventory)
+- [ox_inventory GitHub](https://github.com/overextended/ox_inventory)
 
 ---
-**Créé par:** RedAlex & EagleOnee  
-**Compatibilité ox_inventory ajoutée:** 2026
+**Created by:** RedAlex & EagleOnee  
+**ox_inventory compatibility added:** 2026
