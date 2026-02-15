@@ -44,6 +44,7 @@ Locales['fr'] = {
   ['alarm_max_lvl']       = 'Le ~g~système d\'alarme~s~ est déja au maximum',
   ['alarm_not_install']   = 'Le ~g~système d\'alarme~s~ ne peut pas etre installer',
   ['alarmisnotinstall']   = 'Aucun ~g~système d\'alarme~s~ d\'installer',
+  ['gps_alert_expired']   = '~r~Alerte GPS expirée~s~ : Le signal GPS a été perdu après 5 minutes.',
   ['needtobesit']         = 'vous n\'etes pas dans un véhicule.',
   ['systemdeny']          = '~g~Systeme d\'alarme~s~ ne reconnais pas votre manette.',
   ['no_cops']             = 'mais ou sont donc les policiers?',
@@ -61,4 +62,18 @@ Locales['fr'] = {
   ['vehicle_sold']        = 'Véhicule ~g~vendu~s~ pour ~g~$%s~s~',
   ['blackgarage_resell']  = 'vendre un véhicule volé',
   ['wedontbuythis']       = '~r~Désolés~s~ , mais ca vaut rien.',
+
+  --Vehicle Lock Integration
+  ['vehicle_lock_resource_detected'] = 'Ressource de verrouillage détectée: %s',
+  ['vehicle_lock_no_resource']       = 'Aucune ressource de verrouillage détectée',
+  ['vehicle_lock_default_unlocked']  = 'Les véhicules seront déverrouillés par défaut',
+  ['vehicle_lock_system_adapted']    = 'Système adapté à: %s',
+  ['vehicle_lock_interaction']       = '~INPUT_INTERACTION_MENU~ Véhicule',
+  ['vehicle_lock_purchase_title']    = 'Achat',
+  ['vehicle_lock_purchase_message']  = 'Véhicule reçu - Déverrouillé',
+  ['vehicle_lock_alarm_title']       = '🚨 ALARME',
+  ['vehicle_lock_alarm_message']     = 'Alarme du véhicule déclenchée!',
+  ['vehicle_lock_police_title']      = 'Police',
+  ['vehicle_lock_police_message']    = 'Ce véhicule a été saisi',
+  ['vehicle_lock_client_loaded']     = 'Module d\'intégration client chargé',
 }

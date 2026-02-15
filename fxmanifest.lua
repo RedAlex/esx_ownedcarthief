@@ -14,13 +14,16 @@ shared_scripts {
 server_scripts {
   '@mysql-async/lib/MySQL.lua',
   'config/server.lua',
+  'server/vehicle_lock_manager.lua',
   'server/update.lua',
-  'server/main.lua'
+  'server/main.lua',
+  'server/vehicle_lock_integration.lua'
 }
 
 client_scripts {
   'config/client.lua',
-  'client/main.lua'
+  'client/main.lua',
+  'client/vehicle_lock_integration.lua'
 }
 
 dependencies {

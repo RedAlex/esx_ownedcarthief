@@ -1,11 +1,12 @@
 ESX = exports['es_extended']:getSharedObject()
+
 local carblips = {}
 local second, callCops, timer, systemType = 1000, 0, 0, 0
 local vehicle, vehPlate = nil, nil
 local alarm, sellWait, step1, stoleCheck, vehUnlock = false, false, false, false, false
-local CurrentAction, CurrentActionMsg, CurrentActionData = nil, '', {}
+local CurrentAction = nil -- Variable for current actions
 local HasAlreadyEnteredMarker, LastZone, LastPart, LastPartNum
-
+local gpsAlertTimer = 0  -- Timer to limit GPS alerts duration (in seconds)
 
 CreateThread(function()
 	while true do
@@ -121,6 +122,19 @@ CreateThread(function()
 
 	while true do
 		Wait(1 * second)
+		
+		-- Check if GPS alarm has exceeded 5 minutes (300 seconds)
+		if alarm and gpsAlertTimer >= 300 then
+			-- Automatically disable alarm after 5 minutes
+			removeBlip(vehicle)
+			SetVehicleAlarm(vehicle, false)
+			StartVehicleAlarm(vehicle)
+			alarm, systemType, step2, vehUnlock = false, 0, false, false
+			gpsAlertTimer = 0
+			TriggerServerEvent('esx_ownedcarthief:alarmgps', false)
+			ESX.ShowNotification(_U('gps_alert_expired'))
+		end
+		
 		if systemType == 3 and vehUnlock and GetVehiclePedIsIn(PlayerPedId(), false) ~= 0 then
 			local veh         = GetVehiclePedIsIn(PlayerPedId(), false)
 			local vehicleData = ESX.Game.GetVehicleProperties(veh)
@@ -130,8 +144,10 @@ CreateThread(function()
 				SetVehicleAlarm(vehicle, true)
 				StartVehicleAlarm(vehicle)
 				step1, step2, alarm = false, true, true
+				gpsAlertTimer = 0  -- Start the counter
 			end
 			if step2 and vehicle ~= nil and alarm and vehPlate == vehicleData.plate then
+				gpsAlertTimer = gpsAlertTimer + 2  -- Increment GPS timer
 				alarmTime = (alarmTime + 2)
 				if alarmTime >= 10 then
 					SetVehicleAlarm(vehicle, true)
@@ -148,6 +164,7 @@ CreateThread(function()
 			local veh2 = GetVehiclePedIsIn(PlayerPedId(), false)
 			local vehicleData2 = ESX.Game.GetVehicleProperties(veh2)
 			if vehicle ~= nil and alarm and vehPlate == vehicleData2.plate then
+				gpsAlertTimer = gpsAlertTimer + 2  -- Increment GPS timer for level 2 too
 				alarmTime = (alarmTime + 2)
 				if alarmTime >= 10 then
 					SetVehicleAlarm(vehicle, true)
@@ -224,10 +241,10 @@ AddEventHandler('esx_ownedcarthief:911', function(gx, gy, gz, blipt)
 			if Config.AlertPolice then
 				local transG = 250
 				local crimeBlip = AddBlipForCoord(gx, gy, gz)
-				SetBlipSprite(crimeBlip , 161) -- Blips qui flash bleu
-				SetBlipScale(crimeBlip , 2.0) -- Blips qui flash bleu
-				SetBlipColour(crimeBlip, 3) -- Blips qui flash bleu
-				PulseBlip(crimeBlip) -- Blips qui flash bleu
+				SetBlipSprite(crimeBlip , 161) -- Flashing blue blip
+				SetBlipScale(crimeBlip , 2.0) -- Flashing blue blip
+				SetBlipColour(crimeBlip, 3) -- Flashing blue blip
+				PulseBlip(crimeBlip) -- Flashing blue blip
 				while transG ~= 0 do
 					Wait(Config.BlipTime * XBlipTime)
 					transG = transG - 1
@@ -336,11 +353,13 @@ AddEventHandler('esx_ownedcarthief:GPSBlip', function(id, data)
 	if AlarmStatus then
 		createBlip(veh)
 		alarm = true
+		gpsAlertTimer = 0  -- Reset timer on activation
 	else
 		removeBlip(veh)
 		SetVehicleAlarm(veh, false)
 		StartVehicleAlarm(veh)
 		alarm, systemType, step2, vehUnlock = false, 0 ,false, false
+		gpsAlertTimer = 0  -- Reset timer on deactivation
 	end
 
 end)
@@ -464,12 +483,6 @@ function OpenPawnshopMenu3()
 		end
 	)	
 	end)
-end
-
-function Info(text, loop)
-	SetTextComponentFormat("STRING")
-	AddTextComponentString(text)
-	DisplayHelpTextFromStringLabel(0, loop, 1, 0)
 end
 
 function createBlip(id)

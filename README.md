@@ -4,6 +4,23 @@ Allows stolen & sold vehicles owned by other players.
 Player need to contact a mecano to install one of the 3 alarm system on ther car.
 Only mecano can buy alarm system in the pawnshop and install it on a car.
 
+## 🚀 NEW v1.2.0: Auto Vehicle Lock Integration
+
+**Automatic compatibility with 7 vehicle lock resources!**
+
+Simply add ONE of these resources to your server.cfg:
+- ✨ `ox_vehiclelock` (Recommended - Modern)
+- `esx_carkeys` (Alternative - ESX Native)
+- `esx_lockpick` (Alternative - Lockpick System)
+- `tsn_carlock` (Alternative - Advanced)
+- `vms_carlock` (Alternative - Flexible)
+- `bd_carlock` (Alternative - Simple)
+- `esx_vehiclelock` (Alternative - Basic)
+
+**The script auto-detects and adapts - no code changes needed!**
+
+📖 **See:** [SYSTEM_AUTO_INTEGRATION.md](SYSTEM_AUTO_INTEGRATION.md)
+
 Items
 -Hammer & wire cutter
 This tool can unlock a vehicle with a low rate of success but triggers alarm systems all the time.
@@ -66,7 +83,22 @@ ___
 Permet de volé et de vendre les véhicules posseder par d'autre joueurs.
 Le joueur doit contacter un mécano pour installer l’un des 3 systèmes d’alarme sur la voiture.
 Seul le mécano peut acheter un système d'alarme dans le prêteur sur gages et l'installer sur une voiture.
+## 🚀 NOUVEAU v1.2.0: Intégration Automatique de Verrouillage
 
+**Compatibilité automatique avec 7 ressources de verrouillage!**
+
+Ajoutez simplement UNE de ces ressources à votre server.cfg:
+- ✨ `ox_vehiclelock` (Recommandé - Moderne)
+- `esx_carkeys` (Alternative - ESX Natif)
+- `esx_lockpick` (Alternative - Système de Crochetage)
+- `tsn_carlock` (Alternative - Avancé)
+- `vms_carlock` (Alternative - Flexible)
+- `bd_carlock` (Alternative - Simple)
+- `esx_vehiclelock` (Alternative - Basique)
+
+**Le script détecte et s'adapte automatiquement - aucune modification requise!**
+
+📖 **Voir:** [SYSTEM_AUTO_INTEGRATION.md](SYSTEM_AUTO_INTEGRATION.md)
 Items
 -Marteau & coupe fil
 Cette outil peut déverrouiller un véhicule avec un taux de réusite faible mais déclanche les systems d'alarm a tout coup.
@@ -130,6 +162,23 @@ ___
 Permite roubar veículo de propiedade de outros jogadores.
 O jogador precisa entrar em contato com um mecânico para instalar um dos 3 sistemas de alarme no carro.
 Somente o mecânico pode comprar sistema de alarme na casa de penhores e instalar em um carro.
+
+## 🚀 NOVO v1.2.0: Integração Automática de Bloqueio de Veículo
+
+**Compatibilidade automática com 7 recursos de bloqueio!**
+
+Simplesmente adicione UM destes recursos ao seu server.cfg:
+- ✨ `ox_vehiclelock` (Recomendado - Moderno)
+- `esx_carkeys` (Alternativa - ESX Nativo)
+- `esx_lockpick` (Alternativa - Sistema de Arrombamento)
+- `tsn_carlock` (Alternativa - Avançado)
+- `vms_carlock` (Alternativa - Flexível)
+- `bd_carlock` (Alternativa - Simples)
+- `esx_vehiclelock` (Alternativa - Básico)
+
+**O script detecta e se adapta automaticamente - nenhuma modificação necessária!**
+
+📖 **Veja:** [SYSTEM_AUTO_INTEGRATION.md](SYSTEM_AUTO_INTEGRATION.md)
 
 Items
 -Hammer & wirecutter

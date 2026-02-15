@@ -3,7 +3,7 @@ ESX = exports['es_extended']:getSharedObject()
 local vehicles = nil
 local minute, waitTime = 60000, 0
 
--- === SYSTÈME D'INSTALLATION AUTOMATIQUE DE LA BASE DE DONNÉES ===
+-- === AUTOMATIC DATABASE INSTALLATION SYSTEM ===
 local SQLLabels = {
 	fr = {
 		hammerwirecutter = 'Marteau & coupe fil',
@@ -43,7 +43,7 @@ local SQLLabels = {
 	}
 }
 
--- Descriptions multilingues pour ox_inventory
+-- Multilingual descriptions for ox_inventory
 local SQLDescriptions = {
 	fr = {
 		hammerwirecutter = "Outil basique pour forcer les véhicules. Haute chance de déclencher les alarmes.",
@@ -83,49 +83,49 @@ local SQLDescriptions = {
 	}
 }
 
--- Fonction d'initialisation de la base de données (exécution séquentielle)
+-- Database initialization function (sequential execution)
 CreateThread(function()
 	local locale = Config.Locale or 'en'
 	local labels = SQLLabels[locale] or SQLLabels['en']
 	
-	-- Étape 1: Vérifier que la table owned_vehicles existe (devrait exister via ESX)
+	-- Step 1: Check that the owned_vehicles table exists (should exist via ESX)
 	MySQL.Async.fetchAll("SHOW TABLES LIKE 'owned_vehicles'", {}, function(tableResult)
 		if #tableResult == 0 then
-			print("^1[esx_ownedcarthief] ERREUR: La table 'owned_vehicles' n'existe pas! Assurez-vous qu'ESX est correctement installé.^0")
+			print("^1[esx_ownedcarthief] ERROR: The 'owned_vehicles' table does not exist! Make sure ESX is properly installed.^0")
 			return
 		end
 		
-		-- Étape 2: Ajouter la colonne 'security' si elle n'existe pas
+		-- Step 2: Add the 'security' column if it does not exist
 		MySQL.Async.fetchAll("SHOW COLUMNS FROM owned_vehicles LIKE 'security'", {}, function(securityResult)
 			if #securityResult == 0 then
 				MySQL.Async.execute("ALTER TABLE owned_vehicles ADD security INT(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system level' AFTER owner", {}, function()
-					-- Étape 3: Ajouter la colonne 'alarmactive' après 'security'
+					-- Step 3: Add the 'alarmactive' column after 'security'
 					addAlarmActiveColumn(labels)
 				end)
 			else
-				-- La colonne security existe déjà, passer à la suivante
+				-- The security column already exists, move to the next step
 				addAlarmActiveColumn(labels)
 			end
 		end)
 	end)
 end)
 
--- Fonction pour ajouter la colonne alarmactive
+-- Function to add the alarmactive column
 function addAlarmActiveColumn(labels)
 	MySQL.Async.fetchAll("SHOW COLUMNS FROM owned_vehicles LIKE 'alarmactive'", {}, function(alarmResult)
 		if #alarmResult == 0 then
 			MySQL.Async.execute("ALTER TABLE owned_vehicles ADD alarmactive INT(1) NOT NULL DEFAULT '0' COMMENT 'Alarm system state' AFTER security", {}, function()
-				-- Étape 4: Créer la table pawnshop_vehicles
+				-- Step 4: Create the pawnshop_vehicles table
 				createPawnshopTable(labels)
 			end)
 		else
-			-- La colonne alarmactive existe déjà, passer à la suivante
+			-- The alarmactive column already exists, move to the next step
 			createPawnshopTable(labels)
 		end
 	end)
 end
 
--- Fonction pour créer la table pawnshop_vehicles
+-- Function to create the pawnshop_vehicles table
 function createPawnshopTable(labels)
 	MySQL.Async.fetchAll("SHOW TABLES LIKE 'pawnshop_vehicles'", {}, function(tablePawnResult)
 		if #tablePawnResult == 0 then
@@ -140,19 +140,19 @@ function createPawnshopTable(labels)
 					PRIMARY KEY (plate)
 				) ENGINE=InnoDB DEFAULT CHARSET=utf8
 			]], {}, function()
-				-- Étape 5: Vérifier que la table items existe avant d'insérer
+				-- Step 5: Check that the items table exists before inserting
 				checkAndAddItems(labels)
 			end)
 		else
-			-- La table existe déjà, passer aux items
+			-- The table already exists, move to items
 			checkAndAddItems(labels)
 		end
 	end)
 end
 
--- Fonction pour vérifier et ajouter les items
+-- Function to check and add items
 function checkAndAddItems(labels)
-	-- Détecter si ox_inventory est installé et démarré
+	-- Detect if ox_inventory is installed and started
 	local useOxInventory = GetResourceState('ox_inventory') == 'started'
 	
 	if useOxInventory then
@@ -162,7 +162,7 @@ function checkAndAddItems(labels)
 	end
 end
 
--- Fonction pour ajouter les items via ox_inventory
+-- Function to add items via ox_inventory
 function addItemsToOxInventory(labels)
 	local locale = Config.Locale or 'en'
 	local descriptions = SQLDescriptions[locale] or SQLDescriptions['en']
@@ -178,11 +178,11 @@ function addItemsToOxInventory(labels)
 	}
 	
 	for _, item in ipairs(itemsToAdd) do
-		-- Vérifier si l'item existe déjà dans ox_inventory
+		-- Check if the item already exists in ox_inventory
 		local existingItem = exports.ox_inventory:Items(item.name)
 		
 		if not existingItem then
-			-- L'item n'existe pas, on peut l'enregistrer
+			-- The item does not exist, it can be registered
 			local success, err = pcall(function()
 				exports.ox_inventory:RegisterItem(item.name, {
 					label = item.label,
@@ -197,20 +197,20 @@ function addItemsToOxInventory(labels)
 				print("^1[esx_ownedcarthief] ERREUR lors de l'enregistrement de l'item '" .. item.name .. "': " .. tostring(err) .. "^0")
 			end
 		end
-		-- Si l'item existe déjà, on le saute silencieusement (pas de doublon)
+		-- If the item already exists, skip silently (no duplicates)
 	end
 end
 
--- Fonction pour ajouter les items via ESX (méthode SQL)
+-- Function to add items via ESX (SQL method)
 function addItemsToESX(labels)
-	-- Vérifier que la table items existe
+	-- Check that the items table exists
 	MySQL.Async.fetchAll("SHOW TABLES LIKE 'items'", {}, function(itemsTableResult)
 		if #itemsTableResult == 0 then
 			print("^1[esx_ownedcarthief] ERREUR: La table 'items' n'existe pas! Assurez-vous qu'ESX est correctement installé.^0")
 			return
 		end
 		
-		-- La table items existe, ajouter les items un par un
+		-- The items table exists, add items one by one
 		local itemsToAdd = {
 			{name = 'hammerwirecutter', label = labels.hammerwirecutter},
 			{name = 'unlockingtool', label = labels.unlockingtool},
@@ -223,7 +223,7 @@ function addItemsToESX(labels)
 		
 		local itemIndex = 1
 		
-		-- Fonction récursive pour ajouter les items séquentiellement
+		-- Recursive function to add items sequentially
 		local function addNextItem()
 			if itemIndex > #itemsToAdd then
 				return
@@ -242,7 +242,7 @@ function addItemsToESX(labels)
 						addNextItem()
 					end)
 				else
-					-- L'item existe déjà, passer au suivant
+					-- The item already exists, move to the next
 					itemIndex = itemIndex + 1
 					addNextItem()
 				end

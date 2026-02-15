@@ -43,8 +43,7 @@ Locales['en'] = {
   ['alarm3isinstall']     = 'The ~g~GPS continuous positioning module~s~ has been ~r~installed~s~',
   ['alarm_max_lvl']       = 'The ~g~alarm system~s~ is already at the maximum',
   ['alarm_not_install']   = 'The ~g~alarm system~s~ can not be installed',
-  ['alarmisnotinstall']   = 'None ~g~alarm system~s~ install',
-  ['needtobesit']         = 'you are not in a vehicle.',
+  ['alarmisnotinstall']   = 'None ~g~alarm system~s~ install',  ['gps_alert_expired']   = '~r~GPS Alert Expired~s~: The GPS signal was lost after 5 minutes.',  ['needtobesit']         = 'you are not in a vehicle.',
   ['systemdeny']          = '~g~Alarm system~s~ don\'t recognize your controller.',
   ['no_cops']             = 'but where are the police then?',
   ['not_work_with_npc']   = 'this vehicle belongs to no one',
@@ -61,4 +60,18 @@ Locales['en'] = {
   ['vehicle_sold']        = 'the vehicle has been ~g~sold~s~ for ~g~$%s~s~',
   ['blackgarage_resell']  = 'sell a stolen vehicle',
   ['wedontbuythis']       = '~r~Sorry~s~, but it\'s worth nothing.',
+
+  --Vehicle Lock Integration
+  ['vehicle_lock_resource_detected'] = 'Lock resource detected: %s',
+  ['vehicle_lock_no_resource']       = 'No vehicle lock resource detected',
+  ['vehicle_lock_default_unlocked']  = 'Vehicles will be unlocked by default',
+  ['vehicle_lock_system_adapted']    = 'System adapted to: %s',
+  ['vehicle_lock_interaction']       = '~INPUT_INTERACTION_MENU~ Vehicle',
+  ['vehicle_lock_purchase_title']    = 'Purchase',
+  ['vehicle_lock_purchase_message']  = 'Vehicle received - Unlocked',
+  ['vehicle_lock_alarm_title']       = '🚨 ALARM',
+  ['vehicle_lock_alarm_message']     = 'Vehicle alarm triggered!',
+  ['vehicle_lock_police_title']      = 'Police',
+  ['vehicle_lock_police_message']    = 'This vehicle has been seized',
+  ['vehicle_lock_client_loaded']     = 'Client integration module loaded',
 }

@@ -43,8 +43,7 @@ Locales['br'] = {
   ['alarm3isinstall']     = 'O ~g~módulo de posicionamento contínuo GPS ~s~foi ~r~instalado~s~',
   ['alarm_max_lvl']       = 'O ~g~sistema de alarme~s~ instalado já é o melhor disponivél',
   ['alarm_not_install']   = 'O ~g~sistema de alarme~s~ não pode ser instalado.',
-  ['alarmisnotinstall']   = 'Nenhum ~g~sistema de alarme~s~ para instalar',
-  ['needtobesit']         = 'você não está em um veículo.',
+  ['alarmisnotinstall']   = 'Nenhum ~g~sistema de alarme~s~ para instalar',  ['gps_alert_expired']   = '~r~Alerta GPS Expirado~s~: O sinal GPS foi perdido após 5 minutos.',  ['needtobesit']         = 'você não está em um veículo.',
   ['systemdeny']          = '~g~Sistema de alarme~s~ não reconhece seu controlador.',
   ['no_cops']             = 'Para fazer é preciso mais policias na cidade',
   ['not_work_with_npc']   = 'Nos não queremos este veículo no momento',
@@ -61,4 +60,18 @@ Locales['br'] = {
   ['vehicle_sold']        = 'pojazd został ~g~sprzedany~s~ for ~g~$%s~s~',
   ['blackgarage_resell']  = 'Vender um veículo roubado',
   ['wedontbuythis']       = '~r~Desculpe~s~, mas não vale nada.',
+
+  --Vehicle Lock Integration
+  ['vehicle_lock_resource_detected'] = 'Recurso de tranca detectado: %s',
+  ['vehicle_lock_no_resource']       = 'Nenhum recurso de tranca de veículo detectado',
+  ['vehicle_lock_default_unlocked']  = 'Os veículos ficarão destrancados por padrão',
+  ['vehicle_lock_system_adapted']    = 'Sistema adaptado a: %s',
+  ['vehicle_lock_interaction']       = '~INPUT_INTERACTION_MENU~ Veículo',
+  ['vehicle_lock_purchase_title']    = 'Compra',
+  ['vehicle_lock_purchase_message']  = 'Veículo recebido - Destrancado',
+  ['vehicle_lock_alarm_title']       = '🚨 ALARME',
+  ['vehicle_lock_alarm_message']     = 'Alarme do veículo disparado!',
+  ['vehicle_lock_police_title']      = 'Polícia',
+  ['vehicle_lock_police_message']    = 'Este veículo foi apreendido',
+  ['vehicle_lock_client_loaded']     = 'Módulo de integração do cliente carregado',
 }
